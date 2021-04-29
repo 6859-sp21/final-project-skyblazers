@@ -25,117 +25,95 @@
       <div id="grid"></div>
     </div>
   </body>
-
+  <script src="js/loadData.js"></script>
   <script>
     //*********************************************************
-    d3.csv("colors.csv", function (mycolor) {
-      function gridData() {
-        var data = new Array();
-        var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
-        var ypos = 1;
-        var width = 30;
-        var height = 30;
-        var click = 0;
-        var count = 0;
+    d3.queue()
+      .defer(d3.csv, "data/colors.csv")
+      .defer(d3.csv, "data/languages.csv")
+      .defer(d3.csv, "data/language_term_dict.csv")
+      .defer(d3.csv, "data/chip_term_dict.csv")
+      .defer(d3.csv, "data/speakers.csv")
+      .await(
+        (error, mycolor, languages, langTermDict, chipTermDict, speakers) => {
+          console.log("my color is");
+          console.log(mycolor);
+          console.log("languages");
+          console.log(languages);
+          console.log("lang term dict");
+          console.log(langTermDict);
+          console.log("chip term dict");
+          console.log(chipTermDict);
+          console.log("speakers");
+          console.log(speakers);
 
-        // iterate for rows
-        for (var row = 0; row < 10; row++) {
-          data.push(new Array());
+          var gridData = getGridData(mycolor);
+          // I like to log the data to the console for quick debugging
+          console.log("grid data");
+          console.log(gridData);
 
-          // iterate for cells/columns inside rows
-          for (var column = 0; column < 32; column++) {
-            count++;
-            console.log(count);
-            data[row].push({
-              x: xpos,
-              y: ypos,
-              width: width,
-              height: height,
-              padding: 10,
-              color: d3.lab(
-                parseFloat(mycolor[count]["L*"]),
-                parseFloat(mycolor[count]["a*"]),
-                parseFloat(mycolor[count]["b*"]),
-                (opacity = 1)
-              ),
-              click: click,
+          var grid = d3
+            .select("#grid")
+            .append("svg")
+            .attr("width", "1000px")
+            .attr("height", "510px");
+          // .call(
+          //   d3.zoom().on("zoom", function () {
+          //     svg.attr("transform", d3.event.transform);
+          //   })
+          // );
+
+          var row = grid
+            .selectAll(".row")
+            .data(gridData)
+            .enter()
+            .append("g")
+            .attr("class", "row");
+
+          var column = row
+            .selectAll(".square")
+            .data(function (d) {
+              return d;
+            })
+            .enter()
+            .append("rect")
+            .attr("class", "square")
+            .attr("x", function (d) {
+              return d.x;
+            })
+            .attr("y", function (d) {
+              return d.y;
+            })
+            .attr("width", function (d) {
+              return d.width;
+            })
+            .attr("height", function (d) {
+              return d.height;
+            })
+            .attr("padding", function (d) {
+              return "10px";
+            })
+            .style("fill", function (d) {
+              return d.color;
+            }) //"#fff")
+            .style("stroke", "#222")
+            .on("click", function (d) {
+              d.click++;
+              if (d.click % 4 == 0) {
+                d3.select(this).style("fill", "#fff");
+              }
+              if (d.click % 4 == 1) {
+                d3.select(this).style("fill", "#2C93E8");
+              }
+              if (d.click % 4 == 2) {
+                d3.select(this).style("fill", "#F56C4E");
+              }
+              if (d.click % 4 == 3) {
+                d3.select(this).style("fill", "#838690");
+              }
             });
-            // increment the x position. I.e. move it over by 50 (width variable)
-            xpos += width;
-          }
-          // reset the x position after a row is complete
-          xpos = 1;
-          // increment the y position for the next row. Move it down 50 (height variable)
-          ypos += height;
         }
-        return data;
-      }
-
-      var gridData = gridData();
-      // I like to log the data to the console for quick debugging
-      console.log(gridData);
-
-      var grid = d3
-        .select("#grid")
-        .append("svg")
-        .attr("width", "1000px")
-        .attr("height", "510px");
-      // .call(
-      //   d3.zoom().on("zoom", function () {
-      //     svg.attr("transform", d3.event.transform);
-      //   })
-      // );
-
-      var row = grid
-        .selectAll(".row")
-        .data(gridData)
-        .enter()
-        .append("g")
-        .attr("class", "row");
-
-      var column = row
-        .selectAll(".square")
-        .data(function (d) {
-          return d;
-        })
-        .enter()
-        .append("rect")
-        .attr("class", "square")
-        .attr("x", function (d) {
-          return d.x;
-        })
-        .attr("y", function (d) {
-          return d.y;
-        })
-        .attr("width", function (d) {
-          return d.width;
-        })
-        .attr("height", function (d) {
-          return d.height;
-        })
-        .attr("padding", function (d) {
-          return "10px";
-        })
-        .style("fill", function (d) {
-          return d.color;
-        }) //"#fff")
-        .style("stroke", "#222")
-        .on("click", function (d) {
-          d.click++;
-          if (d.click % 4 == 0) {
-            d3.select(this).style("fill", "#fff");
-          }
-          if (d.click % 4 == 1) {
-            d3.select(this).style("fill", "#2C93E8");
-          }
-          if (d.click % 4 == 2) {
-            d3.select(this).style("fill", "#F56C4E");
-          }
-          if (d.click % 4 == 3) {
-            d3.select(this).style("fill", "#838690");
-          }
-        });
-    });
+      );
 
     //***********************************************************
     // d3.csv("colors.csv", d3.autoType)
