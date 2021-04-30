@@ -36,16 +36,33 @@
       .defer(d3.csv, "data/speakers.csv")
       .await(
         (error, mycolor, languages, langTermDict, chipTermDict, speakers) => {
-          console.log("my color is");
-          console.log(mycolor);
-          console.log("languages");
-          console.log(languages);
-          console.log("lang term dict");
-          console.log(langTermDict);
-          console.log("chip term dict");
-          console.log(chipTermDict);
-          console.log("speakers");
-          console.log(speakers);
+          // console.log("my color is");
+          // console.log(mycolor);
+          // console.log("languages");
+          // console.log(languages);
+          // console.log("lang term dict");
+          // console.log(langTermDict);
+          // console.log("chip term dict");
+          // console.log(chipTermDict);
+          // console.log("speakers");
+          // console.log(speakers);
+
+          let termAbbrevTermDict = getTermAbbrevToTermDict(langTermDict);
+          // console.log("term abbrev term dict");
+          // console.log(termAbbrevTermDict);
+
+          // temporarily randomly generate a color to use to test the getDataByColor function
+          var color = mycolor[Math.floor(Math.random() * 330)];
+          var colorData = getDataByColor(
+            color["L*"],
+            color["a*"],
+            color["b*"],
+            mycolor,
+            chipTermDict,
+            termAbbrevTermDict
+          );
+          console.log("color data for given chip ID is");
+          console.log(colorData);
 
           var gridData = getGridData(mycolor);
           // I like to log the data to the console for quick debugging

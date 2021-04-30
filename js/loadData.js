@@ -40,3 +40,88 @@ function getGridData(mycolor) {
   }
   return data;
 }
+
+/**
+ * Given the L*, a*, b* values for a color along with necessary data, return an object in the following form:
+ * {chip_id: "123", L*: #, a*: #, b*: #, all_terms: [{language_id: "language1", speaker_id: "s1", term_abb: 'b', term: "abc"}, ...]}
+ *
+ * @param {string|float} l            L* value for the color
+ * @param {string|float} a            a* value for the color
+ * @param {string|float} b            b* value for the color
+ * @param {array} mycolor             array of objects for all the colors
+ * @param {array} chipTermDict        array of objects containing mappings between chip id, language id, speaker id, and the term abbreviation
+ * @param {object} termAbbrevTermDict dictionary of mappings from [term_abbreviation, language_id] to a term
+ *
+ * @returns object
+ */
+function getDataByColor(l, a, b, mycolor, chipTermDict, termAbbrevTermDict) {
+  let chip = mycolor.find((d) => d["L*"] == l && d["a*"] == a && d["b*"] == b);
+  let chipID = chip.chip_id;
+  let colorData = getAllTermsByChipID(chipID, chipTermDict, termAbbrevTermDict);
+
+  colorData["L*"] = l;
+  colorData["a*"] = a;
+  colorData["b*"] = b;
+  return colorData;
+}
+
+function getAllTermsByChipID(chipID, chipTermDict, termAbbrevTermDict) {
+  // get all the chip terms for the given chip ID
+  let terms = chipTermDict.filter((d) => d.chip_id == chipID);
+
+  // start building object to return
+  let colorData = { chip_id: chipID };
+  let allTerms = [];
+
+  terms.forEach((term) => {
+    var termDict = {};
+    termDict.language_id = term.language_id;
+    termDict.speaker_id = term.speaker_id;
+    termDict.term_abbreviation = term.term_abbreviation;
+    key = [term.term_abbreviation, term.language_id];
+    termDict.term = termAbbrevTermDict[key];
+    allTerms.push(termDict);
+  });
+  // debugger;
+  colorData.all_terms = allTerms;
+  return colorData;
+}
+
+/**
+ * Return a dictionary in which the key is a tuple of [term_abbreviation, langugae_id] and the value is the term associated with the given term_abbreviation, language pair
+ *
+ * @param {array} langTermDict Array of objects containing mappings between langugae, term id, term abbreviation, and the actual term
+ * @returns object
+ */
+function getTermAbbrevToTermDict(langTermDict) {
+  let termAbbrevTermDict = {};
+  langTermDict.forEach((d) => {
+    var key = [d.term_abbreviation, d.language_id].toString();
+    termAbbrevTermDict[key] = d.term;
+  });
+  return termAbbrevTermDict;
+}
+
+// function buildAllChipsData(chipTermDict, termAbbrevTermDict) {
+//   var chipData = {};
+//   var chips = new Set(chipTermDict.map((d) => d.chip_id));
+
+//   chips.forEach((chipID) => {
+//     // if chip ID does not exist in chip data yet
+//     if (!(chipID in chipData)) {
+//       chipData[chipID] = [];
+//     }
+//     chipTerms = getChipTermsByID(chipID, chipTermDict);
+//     chipTerms.forEach((term) => {
+//       var termDict = {};
+//       termDict.chip_id = term.chip_id;
+//       termDict.language_id = term.language_id;
+//       termDict.speaker_id = term.speaker_id;
+//       termDict.term_abbreviation = term.term_abbreviation;
+//       key = [term.term_abbreviation, term.language_id];
+//       termDict.term = termAbbrevTermDict[key];
+//       chipData[chipID].push(termDict);
+//     });
+//   });
+//   return chipData;
+// }
