@@ -45,12 +45,12 @@ function getGridData(mycolor) {
  * Given the L*, a*, b* values for a color along with necessary data, return an object in the following form:
  * {chip_id: "123", L*: #, a*: #, b*: #, all_terms: [{language_id: "language1", speaker_id: "s1", term_abb: 'b', term: "abc"}, ...]}
  *
- * @param {string|float} l            L* value for the color
- * @param {string|float} a            a* value for the color
- * @param {string|float} b            b* value for the color
- * @param {array} mycolor             array of objects for all the colors
- * @param {array} chipTermDict        array of objects containing mappings between chip id, language id, speaker id, and the term abbreviation
- * @param {object} termAbbrevTermDict dictionary of mappings from [term_abbreviation, language_id] to a term
+ * @param {string|float} l                  L* value for the color
+ * @param {string|float} a                  a* value for the color
+ * @param {string|float} b                  b* value for the color
+ * @param {array}        mycolor            array of objects for all the colors
+ * @param {array}        chipTermDict       array of objects containing mappings between chip id, language id, speaker id, and the term abbreviation
+ * @param {object}       termAbbrevTermDict dictionary of mappings from [term_abbreviation, language_id] to a term
  *
  * @returns object
  */
@@ -91,6 +91,7 @@ function getAllTermsByChipID(chipID, chipTermDict, termAbbrevTermDict) {
  * Return a dictionary in which the key is a tuple of [term_abbreviation, langugae_id] and the value is the term associated with the given term_abbreviation, language pair
  *
  * @param {array} langTermDict Array of objects containing mappings between langugae, term id, term abbreviation, and the actual term
+ *
  * @returns object
  */
 function getTermAbbrevToTermDict(langTermDict) {
