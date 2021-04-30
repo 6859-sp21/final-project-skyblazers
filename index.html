@@ -8,17 +8,149 @@
 <link rel="shortcut icon" href="/favicon.ico" />
 
 <html>
+  <style type="text/css">
+    @font-face {
+      font-family: "Twentieth Century Medium";
+      src: url("/fonts/TwentiethCenturyforKenmoreMedium.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "Twentieth Century Semi Bold";
+      src: url("/fonts/TwentiethCenturyforKenmoreSemibold.ttf")
+        format("truetype");
+    }
+    @font-face {
+      font-family: "Twentieth Century Light";
+      src: url("/fonts/TwentiethCenturyforKenmoreLight.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "Twentieth Century Bold";
+      src: url("/fonts/TwentiethCenturyforKenmoreBold.ttf") format("truetype");
+    }
+    p.customfont {
+      font-family: "Twentieth Century Medium", "Twentieth Century Semi Bold",
+        "Twentieth Century Light", "Twentieth Century Bold";
+    }
+  </style>
+
   <style>
+    .wcs-title {
+      margin: 0;
+      padding: 0px;
+      text-align: center;
+      position: sticky;
+    }
+
+    .subtitle {
+      margin: 0;
+      padding: 0px;
+      text-align: center;
+    }
+
+    .line-break {
+      background: #ececec;
+      width: 1000px;
+      height: 3px;
+      margin: 3em auto;
+    }
+
     #grid {
       row-gap: 100px;
+    }
+
+    footer {
+      font-family: "Twentieth Century Light";
+      padding: 50px;
     }
   </style>
   <head> </head>
   <body>
+    <div class="wcs-title">
+      <div class="container text-left">
+        <div class="row">
+          <div class="col-sm-1" style="padding: 0px; margin-bottom: -30px">
+            <img src="images/world_globe.png" alt="logo" class="world-logo" />
+          </div>
+          <div class="col-sm-11" style="padding: 0px">
+            <h1
+              style="font-family: 'Twentieth Century Medium'; font-size: 48px"
+            >
+              World <span style="color: #95e1d3">C</span
+              ><span style="color: #8ac4d0">o</span
+              ><span style="color: #fce38a">l</span
+              ><span style="color: #ff75a0">o</span
+              ><span style="color: #845ec2">r</span> Survey
+            </h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subtitle">
+      <div class="container text-left">
+        <div class="row">
+          <div class="col-sm-11" style="padding: 0px">
+            <h2 style="font-family: 'Twentieth Century Light'; font-size: 24px">
+              110 UNWRITTEN LANGUAGES, EACH 24 NATIVE SPEAKERS
+            </h2>
+          </div>
+          <div class="row" style="padding: 0px">
+            <p style="font-family: 'Twentieth Century Light'; font-size: 16px">
+              WCS was initiated in the late 1970s to investigate how native
+              speakers around the world classify colors. Within each unwritten
+              language, native speakers were asked to name each of the 330
+              Munsell chips randomly.
+            </p>
+          </div>
+          <div class="row">
+            <div class="line-break"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="container">
       <div id="grid"></div>
       <div id="words"></div>
     </div>
+
+    <footer class="container-fluid text-center">
+      <div class="row">
+        <div class="line-break"></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <h4
+            style="
+              font-family: 'Twentieth Century Light';
+              font-size: 24px;
+              margin-bottom: 0px;
+            "
+          >
+            SUPPORT
+          </h4>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <a href="https://www.kaggle.com/jboysen/color-survey?select=dict.txt "
+            >Dataset</a
+          >
+        </div>
+        <div class="col-sm-4">
+          <a href="https://www.cufonfonts.com/font/twentieth-century">Fonts</a>
+        </div>
+        <div class="col-sm-4">
+          <a
+            href="https://github.com/d3/d3-scale-chromatic/blob/master/README.md"
+            >Color Grid Link TBD</a
+          >
+        </div>
+        <div class="col-sm-4">
+          <a href="https://www.jing.fm/iclipt/xbioo/">Logo</a>
+        </div>
+      </div>
+    </footer>
   </body>
   <script src="js/loadData.js"></script>
   <script>
