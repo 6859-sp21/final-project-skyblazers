@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
-<!-- <script src="https://d3js.org/d3-color.v1.min.js"></script> -->
-<!-- <script src="d3-hcg/d3-hcg.js"></script> -->
 <script
   src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"
   charset="utf-8"
 ></script>
 <link rel="shortcut icon" href="/favicon.ico" />
-<!-- <link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-/> -->
 
 <html>
   <style>
@@ -23,6 +17,7 @@
   <body>
     <div class="container">
       <div id="grid"></div>
+      <div id="words"></div>
     </div>
   </body>
   <script src="js/loadData.js"></script>
@@ -51,7 +46,6 @@
           // console.log("term abbrev term dict");
           // console.log(termAbbrevTermDict);
 
-          // temporarily randomly generate a color to use to test the getDataByColor function
           var color = mycolor[Math.floor(Math.random() * 330)];
           var colorData = getDataByColor(
             color["L*"],
@@ -68,6 +62,40 @@
           // I like to log the data to the console for quick debugging
           console.log("grid data");
           console.log(gridData);
+
+          var tooltip = d3.select("#words").append("div").style("opacity", 0);
+          // .attr("class", "tooltip");
+
+          let mouseOver = function (d) {
+            console.log(d.color.a);
+            var terms = getDataByColor(
+              d.color.l,
+              d.color.a,
+              d.color.b,
+              mycolor,
+              chipTermDict,
+              termAbbrevTermDict
+            );
+
+            console.log(terms);
+
+            // tooltip.style("opacity", 1);
+            d3.select("#words")
+              // .style("stroke", "black")
+              // .style("opacity", 1)
+              .html(JSON.stringify(terms));
+          };
+
+          let mouseLeave = function (d) {
+            // d3.selectAll(".Country")
+            //   .transition()
+            //   .duration(200)
+            //   .style("opacity", 0.8);
+            // d3.select(this)
+            //   .transition()
+            //   .duration(200)
+            //   .style("stroke", "transparent");
+          };
 
           var grid = d3
             .select("#grid")
@@ -114,6 +142,7 @@
               return d.color;
             }) //"#fff")
             .style("stroke", "#222")
+            .on("mouseover", mouseOver)
             .on("click", function (d) {
               d.click++;
               if (d.click % 4 == 0) {
