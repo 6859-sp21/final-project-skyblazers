@@ -87,6 +87,16 @@ function getAllTermsByChipID(chipID, chipTermDict, termAbbrevTermDict) {
   return colorData;
 }
 
+function getListofTerms(all_terms) {
+  var colorWords = [];
+
+  for (var i = 0; i < all_terms.length; i++) {
+    colorWords.push(all_terms[i].term);
+  }
+
+  return colorWords;
+}
+
 /**
  * Return a dictionary in which the key is a tuple of [term_abbreviation, langugae_id] and the value is the term associated with the given term_abbreviation, language pair
  *

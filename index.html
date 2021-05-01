@@ -182,11 +182,10 @@
           console.log("grid data");
           console.log(gridData);
 
-          var tooltip = d3.select("#words").append("div").style("opacity", 0);
+          // var tooltip = d3.select("#words").append("div").style("opacity", 0);
           // .attr("class", "tooltip");
 
           let mouseOver = function (d) {
-            console.log(d.color.a);
             var terms = getDataByColor(
               d.color.l,
               d.color.a,
@@ -196,16 +195,34 @@
               termAbbrevTermDict
             );
 
-            console.log(terms);
+            var updatedWords = getListofTerms(terms.all_terms);
+
+            // updateWordMap(colorWords);
+            updateWordMap(updatedWords);
 
             // tooltip.style("opacity", 1);
-            d3.select("#words");
+
             // .style("stroke", "black")
             // .style("opacity", 1)
             // .html(JSON.stringify(terms));
           };
 
           let mouseLeave = function (d) {
+            var terms = getDataByColor(
+              d.color.l,
+              d.color.a,
+              d.color.b,
+              mycolor,
+              chipTermDict,
+              termAbbrevTermDict
+            );
+
+            var updatedWords = getListofTerms(terms.all_terms);
+
+            // updateWordMap(colorWords);
+            updateWordMap([]);
+
+            // updateWordMap([]);
             // d3.selectAll(".Country")
             //   .transition()
             //   .duration(200)
@@ -262,6 +279,7 @@
             }) //"#fff")
             .style("stroke", "#222")
             .on("mouseover", mouseOver)
+            .on("mouseout", mouseLeave)
             .on("click", function (d) {
               d.click++;
               if (d.click % 4 == 0) {
@@ -296,11 +314,7 @@
             termAbbrevTermDict
           ).all_terms;
 
-          var colorWords = [];
-
-          for (var i = 0; i < first_terms.length; i++) {
-            colorWords.push(first_terms[i].term);
-          }
+          var colorWords = getListofTerms(first_terms);
 
           var layout = d3.layout
             .cloud()
@@ -309,30 +323,13 @@
               colorWords.map(function (d) {
                 return {
                   text: d,
-                  font: "serif",
-                  style: "normal",
-                  font: "serif",
-                  hasText: true,
-                  height: 182,
-                  padding: 5,
-                  rotate: -90,
-                  size: 20,
-                  style: "normal",
-                  weight: "normal",
-                  width: 128,
-                  x: -33,
-                  x0: -64,
-                  x1: 64,
-                  xoff: 0,
-                  y: -86,
-                  y0: -76,
-                  y1: 90,
-                  yoff: 0,
+                  // size: Math.random() * 100,
                 };
               })
             )
             .padding(5)
             .fontSize(20)
+            // .font("helvetica")
             .on("end", draw);
           layout.start();
 
@@ -351,6 +348,55 @@
               .data(words)
               .enter()
               .append("text")
+              .style("font-size", function (d) {
+                return d.size + "px";
+              })
+              .attr("text-anchor", "middle")
+              .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .text(function (d) {
+                return d.text;
+              });
+          }
+
+          function updateWordMap(colorWords) {
+            console.log("colorwords in update", colorWords);
+            layout
+              .size([width, height])
+              .words(
+                colorWords.map(function (d) {
+                  return {
+                    text: d,
+                    // size: Math.random() * 100,
+                  };
+                })
+              )
+              .padding(5)
+              .fontSize(20)
+              // .font("helvetica")
+              .on("end", updateCloud);
+            layout.start();
+          }
+
+          function updateCloud(colorWords) {
+            word_cloud.selectAll("text").remove();
+            word_cloud
+              .append("g")
+              .attr(
+                "transform",
+                "translate(" +
+                  layout.size()[0] / 2 +
+                  "," +
+                  layout.size()[1] / 2 +
+                  ")"
+              )
+              .selectAll("text")
+              .data(colorWords)
+              .enter()
+              .append("text")
+              .transition()
+              .duration(100)
               .style("font-size", function (d) {
                 return d.size + "px";
               })
