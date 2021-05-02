@@ -113,6 +113,28 @@ function getTermAbbrevToTermDict(langTermDict) {
   return termAbbrevTermDict;
 }
 
+function getLangToTermsDict(langTermDict) {
+  let langDict = {};
+  langTermDict.forEach((item) => {
+    let langID = item.language_id;
+    if (langID in langDict) {
+      // console.log("id in dict already");
+
+      // stores distinct terms used for the language
+      let terms = langDict[langID];
+      terms.push(item.term);
+    } else {
+      // console.log("id not in dict yet");
+      langDict[langID] = [item.term];
+    }
+    // console.log("item is", item);
+    // debugger;
+  });
+  console.log("lang dict is", langDict);
+  // debugger;
+  return langDict;
+}
+
 // function buildAllChipsData(chipTermDict, termAbbrevTermDict) {
 //   var chipData = {};
 //   var chips = new Set(chipTermDict.map((d) => d.chip_id));
