@@ -8,6 +8,9 @@
 <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
 <link rel="shortcut icon" href="/favicon.ico" />
 
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+
 <html>
   <style type="text/css">
     @font-face {
@@ -66,6 +69,7 @@
       font-family: "Twentieth Century Light";
       padding: 50px;
     }
+
   </style>
   <head> </head>
   <body>
@@ -125,6 +129,15 @@
       </p>
       <div style="text-align: center" id="grid"></div>
       <div style="text-align: center" id="words"></div>
+    </div>
+
+    <div class = "row">
+      <div class = "line-break"></div>
+    </div>
+
+    <!-- Create an element where the map will take place -->
+    <div class = "map" style="text-align:center">
+      <svg id="my_dataviz" width="1000" height="800"></svg>  
     </div>
 
     <footer class="container-fluid text-center">
@@ -423,225 +436,80 @@
           }
         }
       );
-
-    //***********************************************************
-    // d3.csv("colors.csv", d3.autoType)
-    //   .then(async function (data) {
-    // d3.csv("colors.csv", function (data) {
-    //   console.log(data);
-    //   //   var yellow = d3.hcg(10.0, 0, 9.5);
-    //   //   console.log(yellow);
-
-    //   function gridDataFunc(data) {
-    //     // console.log("starting data", data.length);
-    //     var color_data = new Array();
-    //     var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
-    //     var ypos = 1;
-
-    //     // for (var cell = 0; cell < 10 * 10; cell++) {
-    //     //   color_data.push({
-    //     //     // id: cell,
-    //     //     // color: "#" + Math.floor(Math.random() * 16777215).toString(16),
-    //     //     color: d3.hcg(10.0, 0, 9.5),
-    //     //   });
-    //     // }
-
-    //     for (var cell = 0; cell < data.length; cell++) {
-    //       // console.log(data[cell]);
-    //       // console.log(data[cell]["#cnum"]);
-    //       // console.log(
-    //       //   d3.lab(
-    //       //     parseFloat(data[cell]["L*"]),
-    //       //     parseFloat(data[cell]["a*"]),
-    //       //     parseFloat(data[cell]["b*"]),
-    //       //     (opacity = 1)
-    //       //   )
-    //       // );
-
-    //       color_data.push({
-    //         // id: data[cell]["#cnum"],
-    //         id: cell,
-    //         color: [
-    //           d3.lab(
-    //             parseFloat(data[cell]["L*"]),
-    //             parseFloat(data[cell]["a*"]),
-    //             parseFloat(data[cell]["b*"])
-    //           ),
-    //         ],
-    //       });
-    //     }
-    //     console.log("hello");
-    //     console.log(color_data);
-    //     return color_data;
-    //   }
-
-    //   var width = 50;
-    //   var height = 50;
-
-    //   var gridData = gridDataFunc(data);
-    //   console.log("grid data");
-    //   console.log(gridData);
-
-    //   var grid = d3
-    //     .select("#grid")
-    //     .append("svg")
-    //     .attr("width", "510px")
-    //     .attr("height", "510px");
-
-    //   function update() {
-    //     console.log("beg of update");
-    //     for (var i = 0; i < gridData.length; i++) {
-    //       var cell = gridData[i];
-    //       console.log("cell", cell);
-    //       //   cell.color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-    //       cell.color = [
-    //         d3.lab(
-    //           parseFloat(gridData[i]["L*"]),
-    //           parseFloat(gridData[i]["a*"]),
-    //           parseFloat(gridData[i]["b*"])
-    //         ),
-    //       ];
-    //     }
-
-    //     var cell = grid.selectAll(".cell").data(gridData);
-
-    //     cell
-    //       .enter()
-    //       .append("rect")
-    //       .attr("class", "cell")
-    //       .attr("x", function (d) {
-    //         return (d.id % 10) * width;
-    //       })
-    //       .attr("y", function (d) {
-    //         return Math.floor(d.id / 10) * height;
-    //       })
-    //       .attr("width", width)
-    //       .attr("height", height)
-    //       .style("fill", function (d) {
-    //         console.log("color");
-    //         console.log(d.color);
-    //         return d.color;
-    //       })
-    //       .style("stroke", "#222");
-
-    //     cell
-    //       .transition()
-    //       .duration(1500)
-    //       .delay(1500)
-    //       .style("fill", function (d) {
-    //         return d.color;
-    //       });
-    //   }
-
-    //   console.log("when are we gtting here");
-    //   setInterval(update, 5000);
-
-    //**************************************************************************
-    //   var square = 20,
-    //     w = 900,
-    //     h = 300;
-
-    //   // create the svg
-    //   var svg = d3.select("#grid").append("svg").attr({
-    //     width: w,
-    //     height: h,
-    //   });
-
-    //   // calculate number of rows and columns
-    //   var squaresRow = _.round(w / square);
-    //   var squaresColumn = _.round(h / square);
-
-    //   // loop over number of columns
-    //   _.times(squaresColumn, function (n) {
-    //     // create each set of rows
-    //     var rows = svg
-    //       .selectAll("rect" + " .row-" + (n + 1))
-    //       .data(d3.range(squaresRow))
-    //       .enter()
-    //       .append("rect")
-    //       .attr({
-    //         class: function (d, i) {
-    //           return "square row-" + (n + 1) + " " + "col-" + (i + 1);
-    //         },
-    //         id: function (d, i) {
-    //           return "s-" + (n + 1) + (i + 1);
-    //         },
-    //         width: square,
-    //         height: square,
-    //         x: function (d, i) {
-    //           return i * square;
-    //         },
-    //         y: n * square,
-    //         fill: d3.hcl(10.0, 0, 9.5), //"#fff",
-    //         stroke: "#FDBB30",
-    //       });
-
-    //     // test with some feedback
-    //     var test = rows.on("mouseover", function (d, i) {
-    //       d3.select("#grid-ref").text(function () {
-    //         return "row: " + (n + 1) + " | " + "column: " + (i + 1);
-    //       });
-    //       d3.selectAll(".square").attr("fill", "white");
-    //       d3.select(this).attr("fill", d3.lab(51.57, 35.21, -24.66)); //"#7AC143"
-    //     });
-    //   });
-    //*****************************************************************
-    //   var width = 500,
-    //     height = 500;
-
-    //   var x = d3.scaleOrdinal().range([20, 200], 0.1);
-    //   var y = d3.scaleOrdinal().range([500, 20], 0.1);
-
-    //   var svg = d3
-    //     .select("#chart")
-    //     .append("svg")
-    //     .attr("width", width)
-    //     .attr("height", height);
-
-    //   var hue = 0;
-    //   var data_color = createData(hue);
-    //   console.log("new data");
-    //   console.log(data);
-
-    //   svg.call(renderCircles, data_color);
-
-    //   function renderCircles(selection, data) {
-    //     var circles = selection.selectAll("circle").data(data);
-    //     console.log("new data");
-    //     console.log(data);
-
-    //     circles
-    //       .enter()
-    //       .append("circle")
-    //       .attr("cx", function (d) {
-    //         return x(d[1]);
-    //       })
-    //       .attr("cy", function (d) {
-    //         return y(d[2]);
-    //       })
-    //       .attr("r", 20)
-    //       .attr("transform", "translate(" + 5 + "," + 5 + ")");
-
-    //     circles.attr("fill", function (d) {
-    //       return d3.hcl(d[0], d[1], d[2]).toString();
-    //     });
-    //   }
-
-    //   function createData(h) {
-    //     return d3
-    //       .range(-125, 150, 25)
-    //       .map(function (c) {
-    //         return d3.range(0, 100, 10).map(function (l) {
-    //           return [h, c, l];
-    //         });
-    //       })
-    //       .reduce(function (a, b) {
-    //         return a.concat(b);
-    //       });
-    //   }
-    // });
-    // .catch((e) => {
-    //   console.log(e);
-    // });
   </script>
+
+  <script>
+  // The svg
+  var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+  // Map and projection
+  var path = d3.geoPath();
+  var projection = d3.geoMercator()
+    .scale(150)
+    .center([0,20])
+    .translate([width / 2, height / 2]);
+
+  // Data and color scale
+  var data = d3.map();
+  var colorScale = d3.scaleThreshold()
+    .domain([10, 25, 50, 75, 100, 125, 150, 175, 200])
+    .range(d3.schemeBlues[7]);
+
+  // Load external data and boot
+  d3.queue()
+    .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
+    .defer(d3.csv, "data/male_female_ratio.csv", function(d) { data.set(d.code, +d.pop); })
+    .await(ready);
+
+  function ready(error, topo) {
+
+    let mouseOver = function(d) {
+      d3.selectAll(".Country")
+        .transition()
+        .duration(200)
+        .style("opacity", .5)
+      d3.select(this)
+        .transition()
+        .duration(200)
+        .style("opacity", 1)
+        .style("stroke", "black")
+    }
+
+    let mouseLeave = function(d) {
+      d3.selectAll(".Country")
+        .transition()
+        .duration(200)
+        .style("opacity", .8)
+      d3.select(this)
+        .transition()
+        .duration(200)
+        .style("stroke", "transparent")
+    }
+
+    // Draw the map
+    svg.append("g")
+      .selectAll("path")
+      .data(topo.features)
+      .enter()
+      .append("path")
+        // draw each country
+        .attr("d", d3.geoPath()
+          .projection(projection)
+        )
+        // set the color of each country
+        .attr("fill", function (d) {
+          d.total = data.get(d.id) || 0;
+          return colorScale(d.total);
+        })
+        .style("stroke", "transparent")
+        .attr("class", function(d){ return "Country" } )
+        .style("opacity", .8)
+        .on("mouseover", mouseOver )
+        .on("mouseleave", mouseLeave )
+      }
+
+  </script>
+
 </html>
