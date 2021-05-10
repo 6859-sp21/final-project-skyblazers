@@ -94,7 +94,15 @@ function getListofTerms(all_terms) {
     colorWords.push(all_terms[i].term);
   }
 
-  return colorWords;
+  // return colorWords;
+
+  var myMap = {};
+  colorWords.forEach(
+    (el) => (myMap[el] = myMap[el] != undefined ? myMap[el] + 1 : 1)
+  );
+  return Object.keys(myMap).map((k) => {
+    return { term: k, count: myMap[k] };
+  });
 }
 
 /**

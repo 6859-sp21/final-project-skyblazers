@@ -328,25 +328,31 @@
           ).all_terms;
 
           var colorWords = getListofTerms(first_terms);
+          console.log("get list of terms results");
+          console.log(colorWords);
 
           var layout = d3.layout
             .cloud()
             .size([width, height])
             .words(
               colorWords.map(function (d) {
+                // console.log(d);
                 return {
-                  text: d,
-                  // size: Math.random() * 100,
+                  text: d.term,
+                  size: d.count,
                 };
               })
             )
             .padding(5)
-            .fontSize(20)
+            .fontSize(function (d) {
+              return d.size * 5; // consider different, nonlinear scaling & discuss in write up
+            })
             // .font("Twentieth Century Light")
             .on("end", draw);
           layout.start();
 
           function draw(words) {
+            console.log(words);
             word_cloud
               .append("g")
               .attr(
