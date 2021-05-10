@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+<!-- <script src="https://d3js.org/d3-color.v1.min.js"></script> -->
+<!-- <script src="d3-hcg/d3-hcg.js"></script> -->
 <script
   src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"
   charset="utf-8"
 ></script>
 <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
 <link rel="shortcut icon" href="/favicon.ico" />
+
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
 <html>
   <style type="text/css">
@@ -66,6 +72,81 @@
       font-family: "Twentieth Century Light";
       padding: 50px;
     }
+
+    /* Treemap styles */
+    #treemap {
+      max-width: 100%;
+      overflow: auto;
+    }
+    text {
+      pointer-events: none;
+    }
+    .grandparent text {
+      font-weight: bold;
+    }
+    rect {
+      stroke: #fff;
+      stroke-width: 1px;
+    }
+    rect.parent,
+    .grandparent rect {
+      stroke-width: 3px;
+    }
+    .grandparent:hover rect {
+      fill: grey;
+    }
+    .children rect.parent,
+    .grandparent rect {
+      cursor: pointer;
+    }
+    .children rect.child {
+      opacity: 0;
+    }
+    .children rect.parent {
+    }
+    .children:hover rect.child {
+      opacity: 1;
+      stroke-width: 1px;
+    }
+    .children:hover rect.parent {
+      opacity: 0;
+    }
+    .legend {
+      margin-bottom: 8px !important;
+    }
+    .legend rect {
+      stroke-width: 0px;
+    }
+    .legend text {
+      text-anchor: middle;
+      pointer-events: auto;
+      font-size: 15px;
+      font-family: sans-serif;
+      fill: black;
+    }
+    .form-group {
+      text-align: left;
+    }
+    .textdiv {
+      font-family: "Twentieth Century Bold";
+      font-size: 14px;
+      padding: 10px;
+      cursor: pointer;
+      overflow: none;
+    }
+    .textdiv .title {
+      font-size: 102%;
+      font-weight: bold;
+      margin-top: 8px;
+      font-size: 17px !important;
+    }
+    .textdiv p {
+      line-height: 15px;
+      margin: 0 0 4px !important;
+      padding: 0px;
+      font-size: 13px !important;
+    }
+    /***** TREE MAP STYLES END *****/
   </style>
   <head> </head>
   <body>
@@ -125,6 +206,50 @@
       </p>
       <div style="text-align: center" id="grid"></div>
       <div style="text-align: center" id="words"></div>
+
+      <div class="row">
+        <div class="line-break"></div>
+      </div>
+
+      <div id="treemap-title">
+        <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
+          Explore the map below for number of distinct terms used to describe
+          the 330 colors in languages in different countries
+        </h2>
+        <p
+          style="
+            font-family: 'Twentieth Century Light';
+            font-size: 16px;
+            padding: 0px;
+            text-align: center;
+          "
+        >
+          Note: The visualization below does not contain all the data yet
+        </p>
+      </div>
+      <div id="treemap" style="text-align: center"></div>
+    </div>
+
+    <div class="row">
+      <div class="line-break"></div>
+    </div>
+
+    <!-- Create an element where the map will take place -->
+    <div style="text-align: center">
+      <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
+        Geographic Locations of the Languages Spoken by Interviewees
+      </h2>
+      <p
+        style="
+          font-family: 'Twentieth Century Light';
+          font-size: 16px;
+          padding: 0px;
+          text-align: center;
+        "
+      >
+        Note: The visualization below does not contain all the data yet
+      </p>
+      <svg id="map" width="1000" height="800"></svg>
     </div>
 
     <footer class="container-fluid text-center">
@@ -163,12 +288,17 @@
         <div class="col-sm-4">
           <a href="https://www.jing.fm/iclipt/xbioo/">Logo</a>
         </div>
+        <div class="col-sm-4">
+          <a
+            href="http://bl.ocks.org/guglielmo/16d880a6615da7f502116220cb551498"
+            >Treemap</a
+          >
+        </div>
       </div>
     </footer>
   </body>
   <script src="js/loadData.js"></script>
   <script>
-    //*********************************************************
     d3.queue()
       .defer(d3.csv, "data/colors.csv")
       .defer(d3.csv, "data/languages.csv")
@@ -177,7 +307,25 @@
       .defer(d3.csv, "data/speakers.csv")
       .await(
         (error, mycolor, languages, langTermDict, chipTermDict, speakers) => {
+          // console.log("my color is");
+          // console.log(mycolor);
+          // console.log("languages");
+          // console.log(languages);
+          // console.log("lang term dict");
+          // console.log(langTermDict);
+          // console.log("chip term dict");
+          // console.log(chipTermDict);
+          // console.log("speakers");
+          // console.log(speakers);
+
           let termAbbrevTermDict = getTermAbbrevToTermDict(langTermDict);
+          // console.log("term abbrev term dict");
+          // console.log(termAbbrevTermDict);
+
+          let languageIDs = languages.map((l) => l.language_id);
+          // console.log("language ids", languageIDs);
+
+          getLangToTermsDict(langTermDict);
 
           var color = mycolor[Math.floor(Math.random() * 330)];
           var colorData = getDataByColor(
@@ -430,224 +578,310 @@
         }
       );
 
-    //***********************************************************
-    // d3.csv("colors.csv", d3.autoType)
-    //   .then(async function (data) {
-    // d3.csv("colors.csv", function (data) {
-    //   console.log(data);
-    //   //   var yellow = d3.hcg(10.0, 0, 9.5);
-    //   //   console.log(yellow);
+    /************** WORLD MAP START *******************/
+    // The svg
+    var map = d3
+        .select("#map")
+        .append("svg")
+        .attr("width", 1000)
+        .attr("height", 800),
+      width = +map.attr("width"),
+      height = +map.attr("height");
+    // debugger;
+    // Map and projection
+    var path = d3.geoPath();
+    var projection = d3
+      .geoMercator()
+      .scale(150)
+      .center([0, 20])
+      .translate([width / 2, height / 2]);
 
-    //   function gridDataFunc(data) {
-    //     // console.log("starting data", data.length);
-    //     var color_data = new Array();
-    //     var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
-    //     var ypos = 1;
+    // Data and color scale
+    var data = d3.map();
+    var colorScale = d3
+      .scaleThreshold()
+      .domain([10, 25, 50, 75, 100, 125, 150, 175, 200])
+      .range(d3.schemeBlues[7]);
 
-    //     // for (var cell = 0; cell < 10 * 10; cell++) {
-    //     //   color_data.push({
-    //     //     // id: cell,
-    //     //     // color: "#" + Math.floor(Math.random() * 16777215).toString(16),
-    //     //     color: d3.hcg(10.0, 0, 9.5),
-    //     //   });
-    //     // }
+    // Load external data and boot
+    d3.queue()
+      .defer(
+        d3.json,
+        "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
+      )
+      .defer(d3.csv, "data/male_female_ratio.csv", function (d) {
+        data.set(d.code, +d.pop);
+      })
+      .await(ready);
 
-    //     for (var cell = 0; cell < data.length; cell++) {
-    //       // console.log(data[cell]);
-    //       // console.log(data[cell]["#cnum"]);
-    //       // console.log(
-    //       //   d3.lab(
-    //       //     parseFloat(data[cell]["L*"]),
-    //       //     parseFloat(data[cell]["a*"]),
-    //       //     parseFloat(data[cell]["b*"]),
-    //       //     (opacity = 1)
-    //       //   )
-    //       // );
+    function ready(error, topo) {
+      let mouseOver = function (d) {
+        d3.selectAll(".Country")
+          .transition()
+          .duration(200)
+          .style("opacity", 0.5);
+        d3.select(this)
+          .transition()
+          .duration(200)
+          .style("opacity", 1)
+          .style("stroke", "black");
+      };
 
-    //       color_data.push({
-    //         // id: data[cell]["#cnum"],
-    //         id: cell,
-    //         color: [
-    //           d3.lab(
-    //             parseFloat(data[cell]["L*"]),
-    //             parseFloat(data[cell]["a*"]),
-    //             parseFloat(data[cell]["b*"])
-    //           ),
-    //         ],
-    //       });
-    //     }
-    //     console.log("hello");
-    //     console.log(color_data);
-    //     return color_data;
-    //   }
+      let mouseLeave = function (d) {
+        d3.selectAll(".Country")
+          .transition()
+          .duration(200)
+          .style("opacity", 0.8);
+        d3.select(this)
+          .transition()
+          .duration(200)
+          .style("stroke", "transparent");
+      };
 
-    //   var width = 50;
-    //   var height = 50;
+      // Draw the map
+      map
+        .append("g")
+        .selectAll("path")
+        .data(topo.features)
+        .enter()
+        .append("path")
+        // draw each country
+        .attr("d", d3.geoPath().projection(projection))
+        // set the color of each country
+        .attr("fill", function (d) {
+          d.total = data.get(d.id) || 0;
+          return colorScale(d.total);
+        })
+        .style("stroke", "transparent")
+        .attr("class", function (d) {
+          return "Country";
+        })
+        .style("opacity", 0.8)
+        .on("mouseover", mouseOver)
+        .on("mouseleave", mouseLeave);
+    }
+    /************** WORLD MAP END *******************/
+    /********************** TREE MAP *********************/
+    var treemap = document.getElementById("treemap");
+    var divWidth = treemap.offsetWidth;
+    var margin = { top: 30, right: 0, bottom: 20, left: 0 },
+      width = divWidth / 2,
+      height = 600 - margin.top - margin.bottom,
+      formatNumber = d3.format(","),
+      transitioning;
+    // sets x and y scale to determine size of visible boxes
+    var x = d3.scaleLinear().domain([0, width]).range([0, width]);
+    var y = d3.scaleLinear().domain([0, height]).range([0, height]);
+    var treemap = d3
+      .treemap()
+      .size([width, height])
+      .paddingInner(0)
+      .round(false);
+    var svg = d3
+      .select("#treemap")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.bottom + margin.top)
+      .style("margin-left", -margin.left + "px")
+      .style("margin.right", -margin.right + "px")
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .style("shape-rendering", "crispEdges");
+    var grandparent = svg.append("g").attr("class", "grandparent");
+    grandparent
+      .append("rect")
+      .attr("y", -margin.top)
+      .attr("width", width)
+      .attr("height", margin.top)
+      .attr("fill", "#bbbbbb");
+    grandparent
+      .append("text")
+      .attr("x", 6)
+      .attr("y", 6 - margin.top)
+      .attr("dy", ".75em");
 
-    //   var gridData = gridDataFunc(data);
-    //   console.log("grid data");
-    //   console.log(gridData);
+    // load the data used for the treemap
+    d3.json("terms.json", (data) => {
+      var root = d3.hierarchy(data);
+      // console.log("root is", root);
+      treemap(
+        root
+          .sum((d) => d.value)
+          .sort((a, b) => b.height - a.height || b.value - a.value)
+      );
+      display(root);
+      // display((d) => {
 
-    //   var grid = d3
-    //     .select("#grid")
-    //     .append("svg")
-    //     .attr("width", "510px")
-    //     .attr("height", "510px");
-
-    //   function update() {
-    //     console.log("beg of update");
-    //     for (var i = 0; i < gridData.length; i++) {
-    //       var cell = gridData[i];
-    //       console.log("cell", cell);
-    //       //   cell.color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-    //       cell.color = [
-    //         d3.lab(
-    //           parseFloat(gridData[i]["L*"]),
-    //           parseFloat(gridData[i]["a*"]),
-    //           parseFloat(gridData[i]["b*"])
-    //         ),
-    //       ];
-    //     }
-
-    //     var cell = grid.selectAll(".cell").data(gridData);
-
-    //     cell
-    //       .enter()
-    //       .append("rect")
-    //       .attr("class", "cell")
-    //       .attr("x", function (d) {
-    //         return (d.id % 10) * width;
-    //       })
-    //       .attr("y", function (d) {
-    //         return Math.floor(d.id / 10) * height;
-    //       })
-    //       .attr("width", width)
-    //       .attr("height", height)
-    //       .style("fill", function (d) {
-    //         console.log("color");
-    //         console.log(d.color);
-    //         return d.color;
-    //       })
-    //       .style("stroke", "#222");
-
-    //     cell
-    //       .transition()
-    //       .duration(1500)
-    //       .delay(1500)
-    //       .style("fill", function (d) {
-    //         return d.color;
-    //       });
-    //   }
-
-    //   console.log("when are we gtting here");
-    //   setInterval(update, 5000);
-
-    //**************************************************************************
-    //   var square = 20,
-    //     w = 900,
-    //     h = 300;
-
-    //   // create the svg
-    //   var svg = d3.select("#grid").append("svg").attr({
-    //     width: w,
-    //     height: h,
-    //   });
-
-    //   // calculate number of rows and columns
-    //   var squaresRow = _.round(w / square);
-    //   var squaresColumn = _.round(h / square);
-
-    //   // loop over number of columns
-    //   _.times(squaresColumn, function (n) {
-    //     // create each set of rows
-    //     var rows = svg
-    //       .selectAll("rect" + " .row-" + (n + 1))
-    //       .data(d3.range(squaresRow))
-    //       .enter()
-    //       .append("rect")
-    //       .attr({
-    //         class: function (d, i) {
-    //           return "square row-" + (n + 1) + " " + "col-" + (i + 1);
-    //         },
-    //         id: function (d, i) {
-    //           return "s-" + (n + 1) + (i + 1);
-    //         },
-    //         width: square,
-    //         height: square,
-    //         x: function (d, i) {
-    //           return i * square;
-    //         },
-    //         y: n * square,
-    //         fill: d3.hcl(10.0, 0, 9.5), //"#fff",
-    //         stroke: "#FDBB30",
-    //       });
-
-    //     // test with some feedback
-    //     var test = rows.on("mouseover", function (d, i) {
-    //       d3.select("#grid-ref").text(function () {
-    //         return "row: " + (n + 1) + " | " + "column: " + (i + 1);
-    //       });
-    //       d3.selectAll(".square").attr("fill", "white");
-    //       d3.select(this).attr("fill", d3.lab(51.57, 35.21, -24.66)); //"#7AC143"
-    //     });
-    //   });
-    //*****************************************************************
-    //   var width = 500,
-    //     height = 500;
-
-    //   var x = d3.scaleOrdinal().range([20, 200], 0.1);
-    //   var y = d3.scaleOrdinal().range([500, 20], 0.1);
-
-    //   var svg = d3
-    //     .select("#chart")
-    //     .append("svg")
-    //     .attr("width", width)
-    //     .attr("height", height);
-
-    //   var hue = 0;
-    //   var data_color = createData(hue);
-    //   console.log("new data");
-    //   console.log(data);
-
-    //   svg.call(renderCircles, data_color);
-
-    //   function renderCircles(selection, data) {
-    //     var circles = selection.selectAll("circle").data(data);
-    //     console.log("new data");
-    //     console.log(data);
-
-    //     circles
-    //       .enter()
-    //       .append("circle")
-    //       .attr("cx", function (d) {
-    //         return x(d[1]);
-    //       })
-    //       .attr("cy", function (d) {
-    //         return y(d[2]);
-    //       })
-    //       .attr("r", 20)
-    //       .attr("transform", "translate(" + 5 + "," + 5 + ")");
-
-    //     circles.attr("fill", function (d) {
-    //       return d3.hcl(d[0], d[1], d[2]).toString();
-    //     });
-    //   }
-
-    //   function createData(h) {
-    //     return d3
-    //       .range(-125, 150, 25)
-    //       .map(function (c) {
-    //         return d3.range(0, 100, 10).map(function (l) {
-    //           return [h, c, l];
-    //         });
-    //       })
-    //       .reduce(function (a, b) {
-    //         return a.concat(b);
-    //       });
-    //   }
-    // });
-    // .catch((e) => {
-    //   console.log(e);
-    // });
+      // });
+      function display(d) {
+        // write text into grandparent
+        // and activate click's handler
+        grandparent
+          .datum(d.parent)
+          .on("click", transition)
+          .select("text")
+          .text(name(d));
+        // grandparent color
+        grandparent
+          .datum(d.parent)
+          .select("rect")
+          .attr("fill", function () {
+            return "#bbbbbb";
+          });
+        var g1 = svg
+          .insert("g", ".grandparent")
+          .datum(d)
+          .attr("class", "depth");
+        var g = g1.selectAll("g").data(d.children).enter().append("g");
+        // add class and click handler to all g's with children
+        g.filter(function (d) {
+          return d.children;
+        })
+          .classed("children", true)
+          .on("click", transition);
+        g.selectAll(".child")
+          .data(function (d) {
+            return d.children || [d];
+          })
+          .enter()
+          .append("rect")
+          .attr("class", "child")
+          .call(rect);
+        // add title to parents
+        g.append("rect")
+          .attr("class", "parent")
+          .call(rect)
+          .append("title")
+          .text(function (d) {
+            return d.data.name;
+          });
+        /* Adding a foreign object instead of a text object, allows for text wrapping */
+        g.append("foreignObject")
+          .call(rect)
+          .attr("class", "foreignobj")
+          .append("xhtml:div")
+          .attr("dy", ".75em")
+          .html(function (d) {
+            // debugger;
+            return (
+              "" +
+              '<p class="title"> ' +
+              (d.parent.data.name == "Country" ? "" : "Language: ") +
+              d.data.name +
+              "</p>" +
+              "<p><strong style='font-size:15px'>" +
+              formatNumber(d.value) +
+              "</strong> distinct terms used</p>"
+            );
+          })
+          .attr("class", "textdiv"); //textdiv class allows us to style the text easily with CSS
+        function transition(d) {
+          if (transitioning || !d) return;
+          transitioning = true;
+          var g2 = display(d),
+            t1 = g1.transition().duration(650),
+            t2 = g2.transition().duration(650);
+          // Update the domain only after entering new elements.
+          x.domain([d.x0, d.x1]);
+          y.domain([d.y0, d.y1]);
+          // Enable anti-aliasing during the transition.
+          svg.style("shape-rendering", null);
+          // Draw child nodes on top of parent nodes.
+          svg.selectAll(".depth").sort(function (a, b) {
+            return a.depth - b.depth;
+          });
+          // Fade-in entering text.
+          g2.selectAll("text").style("fill-opacity", 0);
+          g2.selectAll("foreignObject div").style("display", "none");
+          /*added*/
+          // Transition to the new view.
+          t1.selectAll("text").call(text).style("fill-opacity", 0);
+          t2.selectAll("text").call(text).style("fill-opacity", 1);
+          t1.selectAll("rect").call(rect);
+          t2.selectAll("rect").call(rect);
+          /* Foreign object */
+          t1.selectAll(".textdiv").style("display", "none");
+          /* added */
+          t1.selectAll(".foreignobj").call(foreign);
+          /* added */
+          t2.selectAll(".textdiv").style("display", "block");
+          /* added */
+          t2.selectAll(".foreignobj").call(foreign);
+          /* added */
+          // Remove the old node when the transition is finished.
+          t1.on("end.remove", function () {
+            this.remove();
+            transitioning = false;
+          });
+        }
+        return g;
+      }
+      function text(text) {
+        text
+          .attr("x", function (d) {
+            return x(d.x) + 6;
+          })
+          .attr("y", function (d) {
+            return y(d.y) + 6;
+          });
+      }
+      function rect(rect) {
+        rect
+          .attr("x", function (d) {
+            return x(d.x0);
+          })
+          .attr("y", function (d) {
+            return y(d.y0);
+          })
+          .attr("width", function (d) {
+            return x(d.x1) - x(d.x0);
+          })
+          .attr("height", function (d) {
+            return y(d.y1) - y(d.y0);
+          })
+          .attr("fill", function (d) {
+            return "#bbbbbb";
+          });
+      }
+      function foreign(foreign) {
+        /* added */
+        foreign
+          .attr("x", function (d) {
+            return x(d.x0);
+          })
+          .attr("y", function (d) {
+            return y(d.y0);
+          })
+          .attr("width", function (d) {
+            return x(d.x1) - x(d.x0);
+          })
+          .attr("height", function (d) {
+            return y(d.y1) - y(d.y0);
+          });
+      }
+      function name(d) {
+        return (
+          breadcrumbs(d) +
+          (d.parent
+            ? " -  Click to zoom out"
+            : " - Click inside square to zoom in")
+        );
+      }
+      function breadcrumbs(d) {
+        var res = "";
+        var sep = " > ";
+        d.ancestors()
+          .reverse()
+          .forEach(function (i) {
+            res += i.data.name + sep;
+          });
+        return res
+          .split(sep)
+          .filter(function (i) {
+            return i !== "";
+          })
+          .join(sep);
+      }
+    });
   </script>
 </html>
