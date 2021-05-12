@@ -228,7 +228,7 @@
               type="range"
               min="1"
               max="25"
-              value="15"
+              value="10"
               class="slider"
               id="wordSlider"
             />
@@ -359,55 +359,33 @@
           console.log("grid data");
           console.log(gridData);
 
-          // var tooltip = d3.select("#words").append("div").style("opacity", 0);
-          // .attr("class", "tooltip");
+          var tooltip = d3
+            .select("#grid")
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px");
 
           let mouseOver = function (d) {
-            var terms = getDataByColor(
-              d.color.l,
-              d.color.a,
-              d.color.b,
-              mycolor,
-              chipTermDict,
-              termAbbrevTermDict
-            );
-
-            var updatedWords = getListofTerms(terms.all_terms);
-
-            // updateWordMap(colorWords);
-            updateWordMap(updatedWords);
-
-            // tooltip.style("opacity", 1);
-
-            // .style("stroke", "black")
-            // .style("opacity", 1)
-            // .html(JSON.stringify(terms));
+            tooltip.style("opacity", 1);
+            d3.select(this).style("stroke", "black").style("opacity", 1);
           };
 
           let mouseLeave = function (d) {
-            var terms = getDataByColor(
-              d.color.l,
-              d.color.a,
-              d.color.b,
-              mycolor,
-              chipTermDict,
-              termAbbrevTermDict
-            );
+            tooltip.style("opacity", 0);
+            d3.select(this).style("stroke", "white").style("opacity", 1);
+          };
 
-            var updatedWords = getListofTerms(terms.all_terms);
-
-            // updateWordMap(colorWords);
-            updateWordMap([]);
-
-            // updateWordMap([]);
-            // d3.selectAll(".Country")
-            //   .transition()
-            //   .duration(200)
-            //   .style("opacity", 0.8);
-            // d3.select(this)
-            //   .transition()
-            //   .duration(200)
-            //   .style("stroke", "transparent");
+          let mouseMove = function (d) {
+            tooltip
+              .html("The exact value of<br>this cell is: ")
+              .style("left", d3.mouse(this)[0] + 70 + "px")
+              .style("top", d3.mouse(this)[1] + "px");
+            d3.select(this).style("stroke", "black").style("opacity", 1);
           };
 
           var grid = d3
@@ -478,6 +456,14 @@
           //     });
           // });
           //********************************MOVABLE CIRCLES TEST******************************
+          var currentColor = getDataByColor(
+            gridData[0][0].color.l,
+            gridData[0][0].color.a,
+            gridData[0][0].color.b,
+            mycolor,
+            chipTermDict,
+            termAbbrevTermDict
+          );
 
           var row = grid
             .selectAll(".row")
@@ -512,11 +498,15 @@
             .style("fill", function (d) {
               return d.color;
             })
-            .style("stroke", "#222")
-            // .on("mouseover", mouseOver)
-            // .on("mouseout", mouseLeave)
+            .style("stroke", "white")
+            .attr("rx", 4)
+            .attr("ry", 4)
+            .style("stroke-width", 2)
+            .on("mouseover", mouseOver)
+            .on("mousemove", mouseMove)
+            .on("mouseout", mouseLeave)
             .on("click", function (d) {
-              var terms = getDataByColor(
+              currentColor = getDataByColor(
                 d.color.l,
                 d.color.a,
                 d.color.b,
@@ -524,15 +514,9 @@
                 chipTermDict,
                 termAbbrevTermDict
               );
-              var updatedWords = getListofTerms(terms.all_terms);
+              var updatedWords = getListofTerms(currentColor.all_terms);
               updateWordMap(updatedWords);
             });
-
-          d3.select("#wordSlider").on("change", function (d) {
-            console.log(d3.select(this).property("value"));
-            console.log("updated words");
-            console.log(updatedWords);
-          });
 
           //**********************************WORD CLOUD*******************************
 
@@ -545,31 +529,31 @@
             .attr("width", width)
             .attr("height", height);
 
-          var first_terms = getDataByColor(
-            gridData[0][0].color.l,
-            gridData[0][0].color.a,
-            gridData[0][0].color.b,
-            mycolor,
-            chipTermDict,
-            termAbbrevTermDict
-          ).all_terms;
-
-          var colorWords = getListofTerms(first_terms);
+          var colorWords = getListofTerms(currentColor.all_terms);
 
           var layout = d3.layout
             .cloud()
             .size([width, height])
             .words(
               colorWords.map(function (d) {
+                // console.log(
+                //   "selection",
+                //   d3.select("#wordSlider").property("value")
+                // );
+                // console.log(d);
+                // if (d.count <= d3.select("#wordSlider").property("value")) {
+                //   console.log("inside the if", d);
                 return {
                   text: d.term,
                   size: d.count,
                 };
+                // }
               })
             )
             .padding(5)
             .fontSize(function (d) {
               // binning font size by count; discuss in write up
+              console.log("later d", d);
               if (d.size <= 5) {
                 return 10;
               } else if (d.size <= 10) {
@@ -612,11 +596,12 @@
               });
           }
 
-          function updateWordMap(colorWords) {
+          function updateWordMap(newWords) {
+            colorWords = newWords;
             layout
               .size([width, height])
               .words(
-                colorWords.map(function (d) {
+                newWords.map(function (d) {
                   return {
                     text: d.term,
                     size: d.count,
@@ -670,8 +655,24 @@
                 return d.text;
               });
           }
+          d3.select("#wordSlider").on("change", function (d) {
+            console.log(d3.select(this).property("value"));
+
+            var selectedCount = d3.select(this).property("value");
+
+            var filteredData = getListofTerms(currentColor.all_terms);
+
+            var filteredWords = filteredData.filter(function (d) {
+              if (d.count <= selectedCount) {
+                return d;
+              }
+            });
+            console.log("filteredWords:", filteredWords);
+            updateWordMap(filteredWords);
+          });
         }
       );
+
     //**********************************END WORD CLOUD*******************************
 
     /************** WORLD MAP START *******************/
