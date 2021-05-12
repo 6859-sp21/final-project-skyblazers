@@ -1,3 +1,7 @@
+/**
+ * This file contains the code that generated the treemap_terms.json file
+ */
+
 d3.csv("data/all_language_terms.csv", (allLangTerms) => {
   let existingCountries = [];
 
@@ -13,10 +17,9 @@ d3.csv("data/all_language_terms.csv", (allLangTerms) => {
       { name: "Europe", type: "Continent", children: [] },
     ],
   };
+  // used this if we wanted to stop at the language level and just display the count of # of distinct terms used in the language
   let langToTermsDict = getLangToTermsDict(langTermDict);
-  // debugger;
-  // // console.log("lang to term dict");
-  // // console.log(langToTermsDict);
+
   allLangTerms.forEach((item) => {
     let continent = item.continent;
     let location = item.language_location;
