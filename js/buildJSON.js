@@ -18,7 +18,7 @@ d3.csv("data/all_language_terms.csv", (allLangTerms) => {
     ],
   };
   // used this if we wanted to stop at the language level and just display the count of # of distinct terms used in the language
-  let langToTermsDict = getLangToTermsDict(langTermDict);
+  //   let langToTermsDict = getLangToTermsDict(langTermDict);
 
   allLangTerms.forEach((item) => {
     let continent = item.continent;
