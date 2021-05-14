@@ -8,11 +8,11 @@ function getGridData(mycolor) {
   var count = 0;
 
   // iterate for rows
-  for (var row = 0; row < 10; row++) {
+  for (var row = 0; row < 22; row++) {
     data.push(new Array());
 
     // iterate for cells/columns inside rows
-    for (var column = 0; column < 33; column++) {
+    for (var column = 0; column < 15; column++) {
       // console.log(count, mycolor[count]);
       data[row].push({
         x: xpos,
