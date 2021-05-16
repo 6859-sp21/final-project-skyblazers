@@ -59,6 +59,12 @@
 
     .line-break {
       background: #ececec;
+      border-left: 6px;
+      height: 100px;
+    }
+
+    .line-break-vertical {
+      background: #ececec;
       width: 100%;
       height: 3px;
       margin-left: 3em auto;
@@ -200,7 +206,7 @@
               WCS was initiated in the late 1970s to investigate how native
               speakers around the world classify colors. Within each unwritten
               language, native speakers were asked to name each of the 330
-              Munsell chips randomly.
+              Munsell chips randomly. Explore the results below!
             </p>
           </div>
         </div>
@@ -220,17 +226,27 @@
               font-family: 'Twentieth Century Light';
             "
           >
-            Scroll over a color to see the word cloud update!
+            Click on a Munsell chip to see the word cloud update or press Play
+            to see the word cloud for each color.
           </p>
         </div>
       </div>
+      <!-- <div class="row">
+        <div class="col-sm-6"></div>
+        <div class="col-sm-6">
+          <div class="col-sm-3">
+             <div class="vl"></div>
+          </div>
+        </div>
+      </div> -->
       <div class="row">
         <div class="col-sm-6">
           <div id="grid"></div>
         </div>
         <div class="col-sm-6">
-          <button id="play-button">Play</button>
-          <div class="square" id="selectedSquare"></div>
+          <p style="color: grey; font-family: 'Twentieth Century Light'">
+            Move the slider to see words with a certain number of occurences.
+          </p>
           <div class="slidecontainer">
             <input
               type="range"
@@ -241,6 +257,8 @@
               id="wordSlider"
             />
           </div>
+          <button class="btn btn-primary" id="play-button">Play</button>
+          <div class="square" id="selectedSquare"></div>
           <div id="words"></div>
         </div>
       </div>
@@ -351,11 +369,10 @@
 
           getLangToTermsDict(langTermDict);
 
-          var color = mycolor[Math.floor(Math.random() * 330)];
           var colorData = getDataByColor(
-            color["L*"],
-            color["a*"],
-            color["b*"],
+            mycolor[0]["L*"],
+            mycolor[0]["a*"],
+            mycolor[0]["b*"],
             mycolor,
             chipTermDict,
             termAbbrevTermDict
@@ -386,12 +403,16 @@
           let mouseLeave = function (d) {
             tooltip.style("opacity", 0);
             d3.select(this).style("stroke", "white").style("opacity", 1);
+            if (d.click % 2 == 0) {
+              console.log("even");
+              d3.select(this).style("stroke", "black").style("opacity", 1);
+            }
           };
 
           let mouseMove = function (d) {
             tooltip
               .html(
-                "The exact value of this cell is:<br>L*:  " +
+                "Cell Color <br>L*:  " +
                   d.color.l +
                   "<br>a*: " +
                   d.color.a +
@@ -485,6 +506,8 @@
             termAbbrevTermDict
           );
 
+          console.log("currentcolor", currentColor);
+
           var row = grid
             .selectAll(".row")
             .data(gridData)
@@ -526,6 +549,16 @@
             .on("mousemove", mouseMove)
             .on("mouseout", mouseLeave)
             .on("click", function (d) {
+              console.log(d.click);
+              d.click++;
+              if (d.click % 1 == 0) {
+                console.log("odd");
+                d3.select(this).style("stroke", "white").style("opacity", 1);
+              }
+              if (d.click % 2 == 0) {
+                console.log("even");
+                d3.select(this).style("stroke", "black").style("opacity", 1);
+              }
               currentColor = getDataByColor(
                 d.color.l,
                 d.color.a,

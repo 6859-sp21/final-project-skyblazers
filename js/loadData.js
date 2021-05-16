@@ -4,7 +4,7 @@ function getGridData(mycolor) {
   var ypos = 1;
   var width = 30;
   var height = 30;
-  var click = 0;
+  var click = 1;
   var count = 0;
 
   // iterate for rows
