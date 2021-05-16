@@ -103,10 +103,8 @@
     .grandparent text {
       font-weight: bold;
       font-family: "Twentieth Century Bold";
+      font-size: 20px;
     }
-    /* .grandparent:hover text {
-      color: white;
-    } */
     rect {
       stroke: white;
       stroke-width: 1px;
@@ -162,14 +160,14 @@
       font-family: "Twentieth Century Bold";
       font-size: 102%;
       font-weight: bold;
-      margin-top: 8px;
-      font-size: 17px !important;
+      margin-top: 5px;
+      font-size: 18px !important;
     }
     .textdiv p {
       line-height: 15px;
-      margin: 0 0 4px !important;
+      margin: 0 0 3px !important;
       padding: 0px;
-      font-size: 13px !important;
+      font-size: 15px !important;
     }
     /***** TREE MAP STYLES END *****/
   </style>
@@ -276,8 +274,9 @@
 
       <div id="treemap-title">
         <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
-          Explore the map below for number of distinct terms used to describe
-          the 330 colors in languages in different countries
+          Explore the map below to discover each language's "Color Vocabulary" –
+          the number of distinct terms used to describe the colors presented in
+          the study
         </h2>
         <p
           style="
@@ -797,7 +796,7 @@
         .attr("height", 800),
       width = +map.attr("width"),
       height = +map.attr("height");
-    // debugger;
+
     // Map and projection
     var path = d3.geoPath();
     var projection = d3
@@ -874,9 +873,9 @@
     /********************** TREE MAP *********************/
     var treemap = document.getElementById("treemap");
     var divWidth = treemap.offsetWidth;
-    var margin = { top: 30, right: 0, bottom: 20, left: 0 },
-      width = divWidth / 1.15,
-      height = 600 - margin.top - margin.bottom,
+    var margin = { top: 40, right: 0, bottom: 20, left: 0 },
+      width = divWidth,
+      height = 900 - margin.top - margin.bottom,
       formatNumber = d3.format(","),
       transitioning;
     // sets x and y scale to determine size of visible boxes
@@ -906,15 +905,13 @@
     // .attr("fill", "#bbbbbb");
     grandparent
       .append("text")
-      .attr("x", 6)
-      .attr("y", 6 - margin.top)
-      .attr("dy", ".75em");
+      .attr("x", 10)
+      .attr("y", 10 - margin.top)
+      .attr("dy", "1em");
 
     // load the data used for the treemap
     d3.json("data/treemap_terms.json", (data) => {
-      debugger;
       var root = d3.hierarchy(data);
-      // console.log("root is", root);
       treemap(
         root
           .sum((d) => d.value)
@@ -972,9 +969,8 @@
           .call(rect)
           .attr("class", "foreignobj")
           .append("xhtml:div")
-          .attr("dy", ".75em")
+          .attr("dy", "1em")
           .html(function (d) {
-            debugger;
             return (
               "" +
               '<p class="title"> ' +
@@ -982,12 +978,12 @@
               d.data.name +
               "</p>" +
               (d.data.type == "Country" || d.data.type == "Continent"
-                ? "<p><strong style='font-size:15px'>" +
+                ? "<p><strong style='font-size:16px'>" +
                   formatNumber(d.data.language_count) +
                   "</strong> languages represented</p>"
                 : "") +
               (d.data.type != "Term"
-                ? "<p><strong style='font-size:15px'>" +
+                ? "<p><strong style='font-size:16px'>" +
                   formatNumber(d.value) +
                   "</strong> distinct terms used</p>"
                 : "")
@@ -1079,7 +1075,7 @@
           });
       }
       function name(d) {
-        // debugger;
+        // ;
         return (
           breadcrumbs(d) +
           (d.parent
