@@ -80,6 +80,7 @@
     }
 
     /* Treemap styles */
+    /* background: #FAF3F3 */
     #treemap {
       max-width: 100%;
       overflow: auto;
@@ -89,7 +90,11 @@
     }
     .grandparent text {
       font-weight: bold;
+      font-family: "Twentieth Century Bold";
     }
+    /* .grandparent:hover text {
+      color: white;
+    } */
     rect {
       stroke: white;
       stroke-width: 1px;
@@ -99,7 +104,7 @@
       stroke-width: 3px;
     }
     .grandparent:hover rect {
-      fill: rgb(149, 228, 146);
+      fill: #e4bad4;
     }
     .children rect.parent,
     .grandparent rect {
@@ -113,7 +118,7 @@
     .children:hover rect.child {
       opacity: 1;
       stroke-width: 1px;
-      fill: rgb(178, 142, 250);
+      fill: #f6dfeb;
     }
     .children:hover rect.parent {
       opacity: 0;
@@ -142,6 +147,7 @@
       overflow: none;
     }
     .textdiv .title {
+      font-family: "Twentieth Century Bold";
       font-size: 102%;
       font-weight: bold;
       margin-top: 8px;
@@ -341,17 +347,17 @@
         (error, mycolor, languages, langTermDict, chipTermDict, speakers) => {
           let termAbbrevTermDict = getTermAbbrevToTermDict(langTermDict);
 
-          var color = mycolor[Math.floor(Math.random() * 330)];
-          var colorData = getDataByColor(
-            color["L*"],
-            color["a*"],
-            color["b*"],
-            mycolor,
-            chipTermDict,
-            termAbbrevTermDict
-          );
-          console.log("color data for given chip ID is");
-          console.log(colorData);
+          // var color = mycolor[Math.floor(Math.random() * 330)];
+          // var colorData = getDataByColor(
+          //   color["L*"],
+          //   color["a*"],
+          //   color["b*"],
+          //   mycolor,
+          //   chipTermDict,
+          //   termAbbrevTermDict
+          // );
+          // console.log("color data for given chip ID is");
+          // console.log(colorData);
 
           var gridData = getGridData(mycolor);
           console.log("grid data");
@@ -760,7 +766,7 @@
     var treemap = document.getElementById("treemap");
     var divWidth = treemap.offsetWidth;
     var margin = { top: 30, right: 0, bottom: 20, left: 0 },
-      width = divWidth / 1.5,
+      width = divWidth / 1.15,
       height = 600 - margin.top - margin.bottom,
       formatNumber = d3.format(","),
       transitioning;
@@ -797,6 +803,7 @@
 
     // load the data used for the treemap
     d3.json("data/treemap_terms.json", (data) => {
+      debugger;
       var root = d3.hierarchy(data);
       // console.log("root is", root);
       treemap(
@@ -816,12 +823,13 @@
           .on("click", transition)
           .select("text")
           .text(name(d));
+
         // grandparent color
         grandparent
           .datum(d.parent)
           .select("rect")
           .attr("fill", function () {
-            return "#bbbbbb";
+            return "#FAF3F3";
           });
         var g1 = svg
           .insert("g", ".grandparent")
@@ -857,13 +865,18 @@
           .append("xhtml:div")
           .attr("dy", ".75em")
           .html(function (d) {
-            // debugger;
+            debugger;
             return (
               "" +
               '<p class="title"> ' +
               (d.data.type != "Language" ? "" : "Language: ") +
               d.data.name +
               "</p>" +
+              (d.data.type == "Country" || d.data.type == "Continent"
+                ? "<p><strong style='font-size:15px'>" +
+                  formatNumber(d.data.language_count) +
+                  "</strong> languages represented</p>"
+                : "") +
               (d.data.type != "Term"
                 ? "<p><strong style='font-size:15px'>" +
                   formatNumber(d.value) +
@@ -937,7 +950,7 @@
             return y(d.y1) - y(d.y0);
           })
           .attr("fill", function (d) {
-            return "#bbbbbb";
+            return "#FAF3F3";
           });
       }
       function foreign(foreign) {
@@ -957,7 +970,7 @@
           });
       }
       function name(d) {
-        debugger;
+        // debugger;
         return (
           breadcrumbs(d) +
           (d.parent

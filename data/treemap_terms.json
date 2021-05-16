@@ -1,6 +1,5 @@
 {
     "name":"Continent",
-    "type": "Root",
     "children":[
       {
         "name":"Africa",
@@ -9,6 +8,7 @@
           {
             "name":"Ivory Coast",
             "type":"Country",
+            "language_count":5,
             "children":[
               {
                 "language_id":"1",
@@ -310,6 +310,7 @@
           {
             "name":"Ghana",
             "type":"Country",
+            "language_count":5,
             "children":[
               {
                 "language_id":"28",
@@ -1016,6 +1017,7 @@
           {
             "name":"South Sudan",
             "type":"Country",
+            "language_count":4,
             "children":[
               {
                 "language_id":"30",
@@ -1245,6 +1247,7 @@
           {
             "name":"Cameroon",
             "type":"Country",
+            "language_count":2,
             "children":[
               {
                 "language_id":"36",
@@ -1435,6 +1438,7 @@
           {
             "name":"CHAD",
             "type":"Country",
+            "language_count":1,
             "children":[
               {
                 "language_id":"61",
@@ -1540,7 +1544,8 @@
               }
             ]
           }
-        ]
+        ],
+        "language_count":17
       },
       {
         "name":"Asia",
@@ -1549,6 +1554,7 @@
           {
             "name":"Philippines",
             "type":"Country",
+            "language_count":5,
             "children":[
               {
                 "language_id":"3",
@@ -2265,6 +2271,7 @@
           {
             "name":"Indonesia",
             "type":"Country",
+            "language_count":5,
             "children":[
               {
                 "language_id":"12",
@@ -2776,6 +2783,7 @@
           {
             "name":"India",
             "type":"Country",
+            "language_count":4,
             "children":[
               {
                 "language_id":"15",
@@ -3340,6 +3348,7 @@
           {
             "name":"Myanmar",
             "type":"Country",
+            "language_count":1,
             "children":[
               {
                 "language_id":"65",
@@ -3398,6 +3407,7 @@
           {
             "name":"Siberia",
             "type":"Country",
+            "language_count":1,
             "children":[
               {
                 "language_id":"109",
@@ -3538,7 +3548,8 @@
               }
             ]
           }
-        ]
+        ],
+        "language_count":16
       },
       {
         "name":"North America",
@@ -3547,6 +3558,7 @@
           {
             "name":"Guatemala",
             "type":"Country",
+            "language_count":3,
             "children":[
               {
                 "language_id":"4",
@@ -3924,6 +3936,7 @@
           {
             "name":"Mexico",
             "type":"Country",
+            "language_count":15,
             "children":[
               {
                 "language_id":"7",
@@ -5600,6 +5613,7 @@
           {
             "name":"Panama",
             "type":"Country",
+            "language_count":4,
             "children":[
               {
                 "language_id":"16",
@@ -6284,6 +6298,7 @@
           {
             "name":"Canada",
             "type":"Country",
+            "language_count":3,
             "children":[
               {
                 "language_id":"31",
@@ -6816,6 +6831,7 @@
           {
             "name":"Honduras",
             "type":"Country",
+            "language_count":2,
             "children":[
               {
                 "language_id":"50",
@@ -6946,6 +6962,7 @@
           {
             "name":"Belize",
             "type":"Country",
+            "language_count":1,
             "children":[
               {
                 "language_id":"57",
@@ -7104,6 +7121,7 @@
           {
             "name":"U S A",
             "type":"Country",
+            "language_count":1,
             "children":[
               {
                 "language_id":"71",
@@ -7179,7 +7197,8 @@
               }
             ]
           }
-        ]
+        ],
+        "language_count":29
       },
       {
         "name":"Oceania",
@@ -7188,6 +7207,7 @@
           {
             "name":"Papua New Guinea",
             "type":"Country",
+            "language_count":14,
             "children":[
               {
                 "language_id":"2",
@@ -9197,6 +9217,7 @@
           {
             "name":"Australia",
             "type":"Country",
+            "language_count":4,
             "children":[
               {
                 "language_id":"58",
@@ -10048,7 +10069,8 @@
               }
             ]
           }
-        ]
+        ],
+        "language_count":18
       },
       {
         "name":"South America",
@@ -10057,6 +10079,7 @@
           {
             "name":"Peru",
             "type":"Country",
+            "language_count":7,
             "children":[
               {
                 "language_id":"5",
@@ -10657,6 +10680,7 @@
           {
             "name":"Brazil",
             "type":"Country",
+            "language_count":3,
             "children":[
               {
                 "language_id":"9",
@@ -10859,6 +10883,7 @@
           {
             "name":"Colombia",
             "type":"Country",
+            "language_count":5,
             "children":[
               {
                 "language_id":"19",
@@ -11255,6 +11280,7 @@
           {
             "name":"Bolivia",
             "type":"Country",
+            "language_count":6,
             "children":[
               {
                 "language_id":"21",
@@ -11898,6 +11924,7 @@
           {
             "name":"Ecuador",
             "type":"Country",
+            "language_count":3,
             "children":[
               {
                 "language_id":"22",
@@ -12120,6 +12147,7 @@
           {
             "name":"Peru, Brazil",
             "type":"Country",
+            "language_count":2,
             "children":[
               {
                 "language_id":"32",
@@ -12305,6 +12333,7 @@
           {
             "name":"French Guiana",
             "type":"Country",
+            "language_count":1,
             "children":[
               {
                 "language_id":"34",
@@ -12428,6 +12457,7 @@
           {
             "name":"Peru, Colombia",
             "type":"Country",
+            "language_count":1,
             "children":[
               {
                 "language_id":"79",
@@ -12496,6 +12526,7 @@
           {
             "name":"Suriname",
             "type":"Country",
+            "language_count":1,
             "children":[
               {
                 "language_id":"84",
@@ -12729,6 +12760,7 @@
           {
             "name":"Peru, Brazil, Colombia",
             "type":"Country",
+            "language_count":1,
             "children":[
               {
                 "language_id":"96",
@@ -12789,21 +12821,24 @@
               }
             ]
           }
-        ]
+        ],
+        "language_count":30
       },
       {
         "name":"Antarctica",
         "type":"Continent",
         "children":[
           
-        ]
+        ],
+        "language_count":0
       },
       {
         "name":"Europe",
         "type":"Continent",
         "children":[
           
-        ]
+        ],
+        "language_count":0
       }
     ]
   }
