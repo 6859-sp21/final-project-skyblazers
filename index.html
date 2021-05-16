@@ -92,6 +92,7 @@
     }
 
     /* Treemap styles */
+    /* background: #FAF3F3 */
     #treemap {
       max-width: 100%;
       overflow: auto;
@@ -101,9 +102,13 @@
     }
     .grandparent text {
       font-weight: bold;
+      font-family: "Twentieth Century Bold";
     }
+    /* .grandparent:hover text {
+      color: white;
+    } */
     rect {
-      stroke: #fff;
+      stroke: white;
       stroke-width: 1px;
     }
     rect.parent,
@@ -111,7 +116,7 @@
       stroke-width: 3px;
     }
     .grandparent:hover rect {
-      fill: grey;
+      fill: #e4bad4;
     }
     .children rect.parent,
     .grandparent rect {
@@ -125,6 +130,7 @@
     .children:hover rect.child {
       opacity: 1;
       stroke-width: 1px;
+      fill: #f6dfeb;
     }
     .children:hover rect.parent {
       opacity: 0;
@@ -153,6 +159,7 @@
       overflow: none;
     }
     .textdiv .title {
+      font-family: "Twentieth Century Bold";
       font-size: 102%;
       font-weight: bold;
       margin-top: 8px;
@@ -355,6 +362,7 @@
     </footer>
   </body>
   <script src="js/loadData.js"></script>
+  <!-- <script src="js/buildJSON.js"></script> -->
   <script>
     d3.queue()
       .defer(d3.csv, "data/colors.csv")
@@ -366,22 +374,17 @@
         (error, mycolor, languages, langTermDict, chipTermDict, speakers) => {
           let termAbbrevTermDict = getTermAbbrevToTermDict(langTermDict);
 
-          let languageIDs = languages.map((l) => l.language_id);
-
-          getLangToTermsDict(langTermDict);
-
-          console.log("color[0]", mycolor[0]);
-
-          var colorData = getDataByColor(
-            mycolor[0]["L*"],
-            mycolor[0]["a*"],
-            mycolor[0]["b*"],
-            mycolor,
-            chipTermDict,
-            termAbbrevTermDict
-          );
-          console.log("color data for given chip ID is");
-          console.log(colorData);
+          // var color = mycolor[Math.floor(Math.random() * 330)];
+          // var colorData = getDataByColor(
+          //   color["L*"],
+          //   color["a*"],
+          //   color["b*"],
+          //   mycolor,
+          //   chipTermDict,
+          //   termAbbrevTermDict
+          // );
+          // console.log("color data for given chip ID is");
+          // console.log(colorData);
 
           var gridData = getGridData(mycolor);
           // console.log("grid data");
@@ -873,7 +876,7 @@
     var treemap = document.getElementById("treemap");
     var divWidth = treemap.offsetWidth;
     var margin = { top: 30, right: 0, bottom: 20, left: 0 },
-      width = divWidth / 2,
+      width = divWidth / 1.15,
       height = 600 - margin.top - margin.bottom,
       formatNumber = d3.format(","),
       transitioning;
@@ -900,8 +903,8 @@
       .append("rect")
       .attr("y", -margin.top)
       .attr("width", width)
-      .attr("height", margin.top)
-      .attr("fill", "#bbbbbb");
+      .attr("height", margin.top);
+    // .attr("fill", "#bbbbbb");
     grandparent
       .append("text")
       .attr("x", 6)
@@ -909,7 +912,8 @@
       .attr("dy", ".75em");
 
     // load the data used for the treemap
-    d3.json("terms.json", (data) => {
+    d3.json("data/treemap_terms.json", (data) => {
+      debugger;
       var root = d3.hierarchy(data);
       // console.log("root is", root);
       treemap(
@@ -929,12 +933,13 @@
           .on("click", transition)
           .select("text")
           .text(name(d));
+
         // grandparent color
         grandparent
           .datum(d.parent)
           .select("rect")
           .attr("fill", function () {
-            return "#bbbbbb";
+            return "#FAF3F3";
           });
         var g1 = svg
           .insert("g", ".grandparent")
@@ -970,16 +975,23 @@
           .append("xhtml:div")
           .attr("dy", ".75em")
           .html(function (d) {
-            // debugger;
+            debugger;
             return (
               "" +
               '<p class="title"> ' +
-              (d.parent.data.name == "Country" ? "" : "Language: ") +
+              (d.data.type != "Language" ? "" : "Language: ") +
               d.data.name +
               "</p>" +
-              "<p><strong style='font-size:15px'>" +
-              formatNumber(d.value) +
-              "</strong> distinct terms used</p>"
+              (d.data.type == "Country" || d.data.type == "Continent"
+                ? "<p><strong style='font-size:15px'>" +
+                  formatNumber(d.data.language_count) +
+                  "</strong> languages represented</p>"
+                : "") +
+              (d.data.type != "Term"
+                ? "<p><strong style='font-size:15px'>" +
+                  formatNumber(d.value) +
+                  "</strong> distinct terms used</p>"
+                : "")
             );
           })
           .attr("class", "textdiv"); //textdiv class allows us to style the text easily with CSS
@@ -1048,7 +1060,7 @@
             return y(d.y1) - y(d.y0);
           })
           .attr("fill", function (d) {
-            return "#bbbbbb";
+            return "#FAF3F3";
           });
       }
       function foreign(foreign) {
@@ -1068,6 +1080,7 @@
           });
       }
       function name(d) {
+        // debugger;
         return (
           breadcrumbs(d) +
           (d.parent
@@ -1081,7 +1094,10 @@
         d.ancestors()
           .reverse()
           .forEach(function (i) {
-            res += i.data.name + sep;
+            res +=
+              (i.data.type == "Language" ? "Language: " : "") +
+              i.data.name +
+              sep;
           });
         return res
           .split(sep)
