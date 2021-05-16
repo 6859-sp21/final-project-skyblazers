@@ -2,6 +2,8 @@
 <meta charset="utf-8" />
 <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
 <script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="https://d3js.org/topojson.v2.min.js"></script>
+<script src="https://d3js.org/d3-queue.v3.min.js"></script>
 <!-- <script src="https://d3js.org/d3-color.v1.min.js"></script> -->
 <!-- <script src="d3-hcg/d3-hcg.js"></script> -->
 <script
@@ -65,6 +67,22 @@
     }
 
     #words {
+      font-family: "Twentieth Century Light";
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    div.tooltip {
+      color: #222; 
+      background: #fff; 
+      border-radius: 3px; 
+      box-shadow: 0px 0px 2px 0px #a6a6a6; 
+      padding: .2em; 
+      text-shadow: #f5f5f5 0 1px 0;
+      opacity: 0.9; 
+      position: absolute;
       font-family: "Twentieth Century Light";
     }
 
@@ -210,6 +228,8 @@
       <div class="row">
         <div class="line-break"></div>
       </div>
+
+      <div class="tooltip"></div>
 
       <div id="treemap-title">
         <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
@@ -590,6 +610,8 @@
       .center([0, 20])
       .translate([width / 2, height / 2]);
 
+    var tooltip = d3.select("div.tooltip");
+
     // Data and color scale
     var data = d3.map();
     var colorScale = d3
@@ -610,6 +632,7 @@
 
     function ready(error, topo) {
       let mouseOver = function (d) {
+        //debugger;
         d3.selectAll(".Country")
           .transition()
           .duration(200)
@@ -619,6 +642,15 @@
           .duration(200)
           .style("opacity", 1)
           .style("stroke", "black");
+        
+        return tooltip.style("hidden", false).html(d.properties.name);
+      };
+
+      let mouseMove = function (d) {
+        tooltip.classed("hidden", false)
+          .style("top", (d3.event.pageY) + "px")
+          .style("left", (d3.event.pageX + 10) + "px")
+          .html(d.properties.name);
       };
 
       let mouseLeave = function (d) {
@@ -630,6 +662,7 @@
           .transition()
           .duration(200)
           .style("stroke", "transparent");
+        tooltip.classed("hidden", true);
       };
 
       // Draw the map
@@ -652,9 +685,12 @@
         })
         .style("opacity", 0.8)
         .on("mouseover", mouseOver)
+        .on("mousemove", mouseMove)
         .on("mouseleave", mouseLeave);
     }
+
     /************** WORLD MAP END *******************/
+
     /********************** TREE MAP *********************/
     var treemap = document.getElementById("treemap");
     var divWidth = treemap.offsetWidth;
