@@ -4,15 +4,15 @@ function getGridData(mycolor) {
   var ypos = 1;
   var width = 30;
   var height = 30;
-  var click = 0;
+  var click = 1;
   var count = 0;
 
   // iterate for rows
-  for (var row = 0; row < 10; row++) {
+  for (var row = 0; row < 22; row++) {
     data.push(new Array());
 
     // iterate for cells/columns inside rows
-    for (var column = 0; column < 33; column++) {
+    for (var column = 0; column < 15; column++) {
       // console.log(count, mycolor[count]);
       data[row].push({
         x: xpos,
@@ -94,7 +94,15 @@ function getListofTerms(all_terms) {
     colorWords.push(all_terms[i].term);
   }
 
-  return colorWords;
+  // return colorWords;
+
+  var myMap = {};
+  colorWords.forEach(
+    (el) => (myMap[el] = myMap[el] != undefined ? myMap[el] + 1 : 1)
+  );
+  return Object.keys(myMap).map((k) => {
+    return { term: k, count: myMap[k] };
+  });
 }
 
 /**
