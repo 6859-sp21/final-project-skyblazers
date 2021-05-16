@@ -2,6 +2,8 @@
 <meta charset="utf-8" />
 <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
 <script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="https://d3js.org/topojson.v2.min.js"></script>
+<script src="https://d3js.org/d3-queue.v3.min.js"></script>
 <!-- <script src="https://d3js.org/d3-color.v1.min.js"></script> -->
 <!-- <script src="d3-hcg/d3-hcg.js"></script> -->
 <script
@@ -77,6 +79,22 @@
     }
 
     #words {
+      font-family: "Twentieth Century Light";
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    div.tooltip {
+      color: #222; 
+      background: #fff; 
+      border-radius: 3px; 
+      box-shadow: 0px 0px 2px 0px #a6a6a6; 
+      padding: .2em; 
+      text-shadow: #f5f5f5 0 1px 0;
+      opacity: 0.9; 
+      position: absolute;
       font-family: "Twentieth Century Light";
     }
 
@@ -272,6 +290,8 @@
         <div class="line-break"></div>
       </div>
 
+      <div class="tooltip"></div>
+
       <div id="treemap-title">
         <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
           Explore the map below to discover each language's "Color Vocabulary" –
@@ -299,7 +319,7 @@
     <!-- Create an element where the map will take place -->
     <div style="text-align: center">
       <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
-        Geographic Locations of the Languages Spoken by Interviewees
+        Geographic Locations of Interviewees
       </h2>
       <p
         style="
@@ -309,7 +329,7 @@
           text-align: center;
         "
       >
-        Note: The visualization below does not contain all the data yet
+        Hover over the shaded countries to see details about interviewees
       </p>
       <svg id="map" width="1000" height="800"></svg>
     </div>
@@ -356,6 +376,19 @@
             >Treemap</a
           >
         </div>
+        <div class="col-sm-4">
+          <a
+            href="https://www.d3-graph-gallery.com/graph/choropleth_hover_effect.html"
+            >Choropleth Map</a
+          >
+        </div>
+        <div class="col-sm-4">
+          <a
+            href="https://blockbuilder.org/abrahamdu/50147e692857054c2bf88c443946e8a5"
+            >World Map Tooltip</a
+          >
+        </div>
+
       </div>
     </footer>
   </body>
@@ -805,6 +838,8 @@
       .center([0, 20])
       .translate([width / 2, height / 2]);
 
+    var tooltip = d3.select("div.tooltip");
+
     // Data and color scale
     var data = d3.map();
     var colorScale = d3
@@ -819,7 +854,7 @@
         "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
       )
       .defer(d3.csv, "data/male_female_ratio.csv", function (d) {
-        data.set(d.code, +d.pop);
+        data.set(d.code, [+d.pop, +d.female, +d.male]);
       })
       .await(ready);
 
@@ -834,6 +869,36 @@
           .duration(200)
           .style("opacity", 1)
           .style("stroke", "black");
+        //debugger;
+        if (d.total == 0) { // Countries without data have 0 as their total
+          return tooltip.style("hidden", false)
+            .html(d.properties.name)
+        }
+        else {
+          return tooltip.style("hidden", false)
+          .html(d.properties.name + 
+                "<br>Interviewees: " + d.total[0] + 
+                "<br>Females: " + d.total[1] + 
+                "<br>Males: " + d.total[2]);
+        }
+      };
+
+      let mouseMove = function (d) {
+        if (d.total == 0) { // Countries without data have 0 as their total
+          tooltip.classed("hidden", false)
+          .style("top", (d3.event.pageY) + "px")
+          .style("left", (d3.event.pageX + 10) + "px")
+          .html(d.properties.name);
+        }
+        else {
+          tooltip.classed("hidden", false)
+          .style("top", (d3.event.pageY) + "px")
+          .style("left", (d3.event.pageX + 10) + "px")
+          .html(d.properties.name + 
+                "<br>Interviewees: " + d.total[0] + 
+                "<br>Females: " + d.total[1] + 
+                "<br>Males: " + d.total[2]);
+        }
       };
 
       let mouseLeave = function (d) {
@@ -845,6 +910,7 @@
           .transition()
           .duration(200)
           .style("stroke", "transparent");
+        tooltip.classed("hidden", true);
       };
 
       // Draw the map
@@ -859,7 +925,12 @@
         // set the color of each country
         .attr("fill", function (d) {
           d.total = data.get(d.id) || 0;
-          return colorScale(d.total);
+          if (d.total == 0) { // Countries without data have 0 as their total
+            return colorScale(d.total);
+          }
+          else {
+            return colorScale(d.total[0]);
+          }
         })
         .style("stroke", "transparent")
         .attr("class", function (d) {
@@ -867,9 +938,12 @@
         })
         .style("opacity", 0.8)
         .on("mouseover", mouseOver)
+        .on("mousemove", mouseMove)
         .on("mouseleave", mouseLeave);
     }
+
     /************** WORLD MAP END *******************/
+
     /********************** TREE MAP *********************/
     var treemap = document.getElementById("treemap");
     var divWidth = treemap.offsetWidth;
