@@ -210,9 +210,10 @@
             </p>
           </div>
         </div>
-        <div class="row">
+        <hr />
+        <!-- <div class="row">
           <div class="line-break"></div>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -369,6 +370,8 @@
 
           getLangToTermsDict(langTermDict);
 
+          console.log("color[0]", mycolor[0]);
+
           var colorData = getDataByColor(
             mycolor[0]["L*"],
             mycolor[0]["a*"],
@@ -381,8 +384,8 @@
           console.log(colorData);
 
           var gridData = getGridData(mycolor);
-          console.log("grid data");
-          console.log(gridData);
+          // console.log("grid data");
+          // console.log(gridData);
 
           var tooltip = d3
             .select("#grid")
