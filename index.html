@@ -59,6 +59,12 @@
 
     .line-break {
       background: #ececec;
+      border-left: 6px;
+      height: 100px;
+    }
+
+    .line-break-vertical {
+      background: #ececec;
       width: 100%;
       height: 3px;
       margin-left: 3em auto;
@@ -77,6 +83,12 @@
     footer {
       font-family: "Twentieth Century Light";
       padding: 50px;
+    }
+
+    .square {
+      height: 30px;
+      width: 30px;
+      border-radius: 4px;
     }
 
     /* Treemap styles */
@@ -201,7 +213,7 @@
               WCS was initiated in the late 1970s to investigate how native
               speakers around the world classify colors. Within each unwritten
               language, native speakers were asked to name each of the 330
-              Munsell chips randomly.
+              Munsell chips randomly. Explore the results below!
             </p>
           </div>
         </div>
@@ -221,15 +233,27 @@
               font-family: 'Twentieth Century Light';
             "
           >
-            Scroll over a color to see the word cloud update!
+            Click on a Munsell chip to see the word cloud update or press Play
+            to see the word cloud for each color.
           </p>
         </div>
       </div>
+      <!-- <div class="row">
+        <div class="col-sm-6"></div>
+        <div class="col-sm-6">
+          <div class="col-sm-3">
+             <div class="vl"></div>
+          </div>
+        </div>
+      </div> -->
       <div class="row">
         <div class="col-sm-6">
           <div id="grid"></div>
         </div>
         <div class="col-sm-6">
+          <p style="color: grey; font-family: 'Twentieth Century Light'">
+            Move the slider to see words with a certain number of occurences.
+          </p>
           <div class="slidecontainer">
             <input
               type="range"
@@ -240,6 +264,8 @@
               id="wordSlider"
             />
           </div>
+          <button class="btn btn-primary" id="play-button">Play</button>
+          <div class="square" id="selectedSquare"></div>
           <div id="words"></div>
         </div>
       </div>
@@ -382,11 +408,22 @@
           let mouseLeave = function (d) {
             tooltip.style("opacity", 0);
             d3.select(this).style("stroke", "white").style("opacity", 1);
+            if (d.click % 2 == 0) {
+              console.log("even");
+              d3.select(this).style("stroke", "black").style("opacity", 1);
+            }
           };
 
           let mouseMove = function (d) {
             tooltip
-              .html("The exact value of<br>this cell is: ")
+              .html(
+                "Cell Color <br>L*:  " +
+                  d.color.l +
+                  "<br>a*: " +
+                  d.color.a +
+                  "<br>b*: " +
+                  d.color.b
+              )
               .style("left", d3.mouse(this)[0] + 70 + "px")
               .style("top", d3.mouse(this)[1] + "px");
             d3.select(this).style("stroke", "black").style("opacity", 1);
@@ -460,6 +497,11 @@
           //     });
           // });
           //********************************MOVABLE CIRCLES TEST******************************
+          var playButton = d3.select("#play-button");
+          var moving = false;
+
+          // console.log("chipTermDict", mycolor);
+
           var currentColor = getDataByColor(
             gridData[0][0].color.l,
             gridData[0][0].color.a,
@@ -468,6 +510,8 @@
             chipTermDict,
             termAbbrevTermDict
           );
+
+          console.log("currentcolor", currentColor);
 
           var row = grid
             .selectAll(".row")
@@ -510,6 +554,16 @@
             .on("mousemove", mouseMove)
             .on("mouseout", mouseLeave)
             .on("click", function (d) {
+              console.log(d.click);
+              d.click++;
+              if (d.click % 1 == 0) {
+                console.log("odd");
+                d3.select(this).style("stroke", "white").style("opacity", 1);
+              }
+              if (d.click % 2 == 0) {
+                console.log("even");
+                d3.select(this).style("stroke", "black").style("opacity", 1);
+              }
               currentColor = getDataByColor(
                 d.color.l,
                 d.color.a,
@@ -522,10 +576,65 @@
               updateWordMap(updatedWords);
             });
 
+          playButton.on("click", function () {
+            var button = d3.select(this);
+            if (button.text() == "Pause") {
+              moving = false;
+              clearInterval(timer);
+              // timer = 0;
+              button.text("Play");
+            } else {
+              moving = true;
+              timer = setInterval(step, 3000);
+              button.text("Pause");
+            }
+            console.log("Slider moving: " + moving);
+          });
+
+          function step() {
+            var newChipID = parseInt(currentColor.chip_id) + 1;
+
+            if (newChipID <= 330) {
+              var newL = mycolor.find((d) => d["chip_id"] == newChipID)["L*"];
+              var newA = mycolor.find((d) => d["chip_id"] == newChipID)["a*"];
+              var newB = mycolor.find((d) => d["chip_id"] == newChipID)["b*"];
+
+              currentColor = getDataByColor(
+                newL,
+                newA,
+                newB,
+                mycolor,
+                chipTermDict,
+                termAbbrevTermDict
+              );
+
+              updateWordMap(getListofTerms(currentColor.all_terms));
+              d3.select("#selectedSquare")
+                .style("stroke", "black")
+                .style("opacity", 1)
+                .style(
+                  "background-color",
+                  d3.lab(
+                    parseFloat(currentColor["L*"]),
+                    parseFloat(currentColor["a*"]),
+                    parseFloat(currentColor["b*"]),
+                    (opacity = 1)
+                  )
+                );
+            } else {
+              moving = false;
+              currentValue = 0;
+              clearInterval(timer);
+              // timer = 0;
+              playButton.text("Play");
+              console.log("Slider moving: " + moving);
+            }
+          }
+
           //**********************************WORD CLOUD*******************************
 
           var width = 600;
-          var height = 800;
+          var height = 700;
 
           var word_cloud = d3
             .select("#words")
