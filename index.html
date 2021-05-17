@@ -2,6 +2,7 @@
 <meta charset="utf-8" />
 <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
 <script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+
 <!-- <script src="https://d3js.org/d3-color.v1.min.js"></script> -->
 <!-- <script src="d3-hcg/d3-hcg.js"></script> -->
 <script
@@ -13,6 +14,11 @@
 <link
   rel="stylesheet"
   href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css"
 />
 
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
@@ -89,6 +95,8 @@
       height: 30px;
       width: 30px;
       border-radius: 4px;
+      padding: 10px;
+      stroke-width: 2px;
     }
 
     /* Treemap styles */
@@ -211,51 +219,98 @@
           <div class="col" style="padding: 0px">
             <p style="font-family: 'Twentieth Century Light'; font-size: 16px">
               WCS was initiated in the late 1970s to investigate how native
-              speakers around the world classify colors. Within each unwritten
-              language, native speakers were asked to name each of the 330
-              Munsell chips randomly. Explore the results below!
+              speakers around the world classify colors. 24 members of 110
+              societies with unwritten languages were asked to name 330 Munsell
+              color chips. Explore the results below!
             </p>
           </div>
         </div>
         <hr />
-        <!-- <div class="row">
-          <div class="line-break"></div>
-        </div> -->
       </div>
     </div>
 
     <div class="container">
       <div class="row">
-        <div class="col">
-          <p
+        <div class="col-sm-6">
+          <h2
             style="
-              text-align: center;
-              color: grey;
               font-family: 'Twentieth Century Light';
+              font-size: 24px;
+              text-align: center;
             "
           >
-            Click on a Munsell chip to see the word cloud update or press Play
-            to see the word cloud for each color.
+            330 Munsell Chips
+          </h2>
+          <p
+            style="
+              color: grey;
+              font-family: 'Twentieth Century Light';
+              text-align: center;
+            "
+          >
+            Click on a color to see the native color descriptions or press
+            <strong>Play</strong>
+            to cycle through all descriptions at once.
           </p>
-        </div>
-      </div>
-      <!-- <div class="row">
-        <div class="col-sm-6"></div>
-        <div class="col-sm-6">
-          <div class="col-sm-3">
-             <div class="vl"></div>
+          <div class="row">
+            <div class="col-sm-5">
+              <p
+                style="
+                  color: grey;
+                  font-family: 'Twentieth Century Light';
+                  margin-left: 50px;
+                "
+              >
+                Current Color Selection:
+              </p>
+            </div>
+            <div class="col-sm-3">
+              <div class="square" id="selectedSquare"></div>
+            </div>
+            <div class="col-sm-4">
+              <button
+                class="btn btn-primary"
+                style="margin-left: 60px"
+                id="play-button"
+              >
+                Play
+              </button>
+            </div>
           </div>
         </div>
-      </div> -->
-      <div class="row">
         <div class="col-sm-6">
-          <div id="grid"></div>
-        </div>
-        <div class="col-sm-6">
-          <p style="color: grey; font-family: 'Twentieth Century Light'">
+          <h2
+            style="
+              font-family: 'Twentieth Century Light';
+              font-size: 24px;
+              text-align: center;
+            "
+          >
+            Native Color Descriptions
+          </h2>
+          <p
+            style="
+              color: grey;
+              font-family: 'Twentieth Century Light';
+              text-align: center;
+            "
+          >
             Move the slider to see words with a certain number of occurences.
           </p>
+
           <div class="slidecontainer">
+            <!-- <input
+              id="wordSlider"
+              type="range"
+              data-provide="slider"
+              data-slider-ticks="[5, 10, 15, 20, 30]"
+              data-slider-ticks-labels='["1 - 5", "6 - 10", "11 - 15", "16 - 20", "20+"]'
+              ddata-sliider-ticks-snap-bounds="5"
+              data-slider-min="5"
+              data-slider-max="30"
+              data-slider-step="5"
+              data-slider-value="10"
+            /> -->
             <input
               type="range"
               min="1"
@@ -265,34 +320,30 @@
               id="wordSlider"
             />
           </div>
-          <button class="btn btn-primary" id="play-button">Play</button>
-          <div class="square" id="selectedSquare"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div id="grid" style="padding-left: 50px"></div>
+        </div>
+        <div class="col-sm-6">
           <div id="words"></div>
         </div>
       </div>
-
-      <div class="row">
-        <div class="line-break"></div>
-      </div>
-
-      <div id="treemap-title">
-        <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
-          Explore the map below for number of distinct terms used to describe
-          the 330 colors in languages in different countries
-        </h2>
-        <p
-          style="
-            font-family: 'Twentieth Century Light';
-            font-size: 16px;
-            padding: 0px;
-            text-align: center;
-          "
-        >
-          Note: The visualization below does not contain all the data yet
-        </p>
-      </div>
-      <div id="treemap" style="text-align: center"></div>
+      <hr />
     </div>
+
+    <div class="row">
+      <div class="line-break"></div>
+    </div>
+
+    <div id="treemap-title">
+      <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
+        Explore the map below for number of distinct terms used to describe the
+        330 colors in languages in different countries
+      </h2>
+    </div>
+    <div id="treemap" style="text-align: center"></div>
 
     <div class="row">
       <div class="line-break"></div>
@@ -303,16 +354,6 @@
       <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
         Geographic Locations of the Languages Spoken by Interviewees
       </h2>
-      <p
-        style="
-          font-family: 'Twentieth Century Light';
-          font-size: 16px;
-          padding: 0px;
-          text-align: center;
-        "
-      >
-        Note: The visualization below does not contain all the data yet
-      </p>
       <svg id="map" width="1000" height="800"></svg>
     </div>
 
@@ -362,7 +403,6 @@
     </footer>
   </body>
   <script src="js/loadData.js"></script>
-  <!-- <script src="js/buildJSON.js"></script> -->
   <script>
     d3.queue()
       .defer(d3.csv, "data/colors.csv")
@@ -374,21 +414,7 @@
         (error, mycolor, languages, langTermDict, chipTermDict, speakers) => {
           let termAbbrevTermDict = getTermAbbrevToTermDict(langTermDict);
 
-          // var color = mycolor[Math.floor(Math.random() * 330)];
-          // var colorData = getDataByColor(
-          //   color["L*"],
-          //   color["a*"],
-          //   color["b*"],
-          //   mycolor,
-          //   chipTermDict,
-          //   termAbbrevTermDict
-          // );
-          // console.log("color data for given chip ID is");
-          // console.log(colorData);
-
           var gridData = getGridData(mycolor);
-          // console.log("grid data");
-          // console.log(gridData);
 
           var tooltip = d3
             .select("#grid")
@@ -410,7 +436,6 @@
             tooltip.style("opacity", 0);
             d3.select(this).style("stroke", "white").style("opacity", 1);
             if (d.click % 2 == 0) {
-              console.log("even");
               d3.select(this).style("stroke", "black").style("opacity", 1);
             }
           };
@@ -434,74 +459,10 @@
             .select("#grid")
             .append("svg")
             .attr("width", "600px")
-            .attr("height", "800px");
-          // .call(
-          //   d3.zoom().on("zoom", function () {
-          //     svg.attr("transform", d3.event.transform);
-          //   })
-          // );
+            .attr("height", "600px");
 
-          //********************************MOVABLE CIRCLES TEST******************************
-          //https://www.d3-graph-gallery.com/graph/circularpacking_template.html
-          // var node = grid
-          //   .append("g")
-          //   .selectAll("circle")
-          //   .data(gridData[0])
-          //   .enter()
-          //   .append("circle")
-          //   .attr("class", "node")
-          //   .attr("r", function (d) {
-          //     console.log(d);
-          //     console.log(Math.random() * 100);
-          //     return Math.random() * 100;
-          //   })
-          //   .attr("cx", 600 / 2)
-          //   .attr("cy", 1000 / 2)
-          //   .style("fill", function (d) {
-          //     return d.color;
-          //   })
-          //   .style("fill-opacity", 0.8)
-          //   .attr("stroke", "black")
-          //   .style("stroke-width", 1);
-
-          // // Features of the forces applied to the nodes:
-          // var simulation = d3
-          //   .forceSimulation()
-          //   .force(
-          //     "center",
-          //     d3
-          //       .forceCenter()
-          //       .x(600 / 2)
-          //       .y(1000 / 2)
-          //   ) // Attraction to the center of the svg area
-          //   .force("charge", d3.forceManyBody().strength(0.1)) // Nodes are attracted one each other of value is > 0
-          //   .force(
-          //     "collide",
-          //     d3
-          //       .forceCollide()
-          //       .strength(0.2)
-          //       .radius(function (d) {
-          //         return Math.random() * 100;
-          //       })
-          //       .iterations(1)
-          //   ); // Force that avoids circle overlapping
-
-          // // Apply these forces to the nodes and update their positions.
-          // // Once the force algorithm is happy with positions ('alpha' value is low enough), simulations will stop.
-          // simulation.nodes(gridData[0]).on("tick", function (d) {
-          //   node
-          //     .attr("cx", function (d) {
-          //       return d.x;
-          //     })
-          //     .attr("cy", function (d) {
-          //       return d.y;
-          //     });
-          // });
-          //********************************MOVABLE CIRCLES TEST******************************
           var playButton = d3.select("#play-button");
           var moving = false;
-
-          // console.log("chipTermDict", mycolor);
 
           var currentColor = getDataByColor(
             gridData[0][0].color.l,
@@ -511,8 +472,6 @@
             chipTermDict,
             termAbbrevTermDict
           );
-
-          console.log("currentcolor", currentColor);
 
           var row = grid
             .selectAll(".row")
@@ -555,15 +514,20 @@
             .on("mousemove", mouseMove)
             .on("mouseout", mouseLeave)
             .on("click", function (d) {
-              console.log(d.click);
               d.click++;
               if (d.click % 1 == 0) {
-                console.log("odd");
                 d3.select(this).style("stroke", "white").style("opacity", 1);
+                d3.select("#selectedSquare")
+                  .style("stroke", "black")
+                  .style("opacity", 1)
+                  .style("background-color", "white");
               }
               if (d.click % 2 == 0) {
-                console.log("even");
                 d3.select(this).style("stroke", "black").style("opacity", 1);
+                d3.select("#selectedSquare")
+                  .style("stroke", "black")
+                  .style("opacity", 1)
+                  .style("background-color", d.color);
               }
               currentColor = getDataByColor(
                 d.color.l,
@@ -635,7 +599,7 @@
           //**********************************WORD CLOUD*******************************
 
           var width = 600;
-          var height = 700;
+          var height = 600;
 
           var word_cloud = d3
             .select("#words")
@@ -770,9 +734,9 @@
               });
           }
           d3.select("#wordSlider").on("change", function (d) {
-            console.log(d3.select(this).property("value"));
+            console.log(d3.select(this).property("data-slider-value"));
 
-            var selectedCount = d3.select(this).property("value");
+            var selectedCount = d3.select(this).property("data-slider-value");
 
             var filteredData = getListofTerms(currentColor.all_terms);
 
@@ -913,7 +877,7 @@
 
     // load the data used for the treemap
     d3.json("data/treemap_terms.json", (data) => {
-      debugger;
+      // debugger;
       var root = d3.hierarchy(data);
       // console.log("root is", root);
       treemap(
@@ -975,7 +939,7 @@
           .append("xhtml:div")
           .attr("dy", ".75em")
           .html(function (d) {
-            debugger;
+            // debugger;
             return (
               "" +
               '<p class="title"> ' +
