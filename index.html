@@ -87,13 +87,13 @@
     }
 
     div.tooltip {
-      color: #222; 
-      background: #fff; 
-      border-radius: 3px; 
-      box-shadow: 0px 0px 2px 0px #a6a6a6; 
-      padding: .2em; 
+      color: #222;
+      background: #fff;
+      border-radius: 3px;
+      box-shadow: 0px 0px 2px 0px #a6a6a6;
+      padding: 0.2em;
       text-shadow: #f5f5f5 0 1px 0;
-      opacity: 0.9; 
+      opacity: 0.9;
       position: absolute;
       font-family: "Twentieth Century Light";
     }
@@ -192,7 +192,7 @@
   <head> </head>
   <body>
     <div class="wcs-title">
-      <div class="container">
+      <div class="container-fluid text-center">
         <div class="row">
           <div class="col" style="padding: 0px">
             <img
@@ -215,7 +215,7 @@
     </div>
 
     <div class="subtitle">
-      <div class="container">
+      <div class="container-fluid text-center">
         <div class="row">
           <div class="col" style="padding: 0px">
             <h2 style="font-family: 'Twentieth Century Light'; font-size: 24px">
@@ -239,7 +239,7 @@
       </div>
     </div>
 
-    <div class="container">
+    <div class="container-fluid text-center" style="width: 90%">
       <div class="row">
         <div class="col">
           <p
@@ -292,46 +292,45 @@
 
       <div class="tooltip"></div>
 
-      <div id="treemap-title">
-        <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
-          Explore the map below to discover each language's "Color Vocabulary" –
-          the number of distinct terms used to describe the colors presented in
-          the study
-        </h2>
-        <p
-          style="
-            font-family: 'Twentieth Century Light';
-            font-size: 16px;
-            padding: 0px;
-            text-align: center;
-          "
-        >
-          Note: The visualization below does not contain all the data yet
-        </p>
+      <div class="row">
+        <div class="col-7">
+          <div id="treemap-title">
+            <h2
+              style="font-family: 'Twentieth Century Light'; text-align: center"
+            >
+              Explore the map below to discover each language's "Color
+              Vocabulary" – the number of distinct terms used to describe the
+              colors presented in the study
+            </h2>
+          </div>
+          <div id="treemap" style="text-align: center"></div>
+        </div>
+        <div class="col-5">
+          <!-- Create an element where the map will take place -->
+          <div style="text-align: center">
+            <h2
+              style="font-family: 'Twentieth Century Light'; text-align: center"
+            >
+              Geographic Locations of Interviewees
+            </h2>
+            <p
+              style="
+                font-family: 'Twentieth Century Light';
+                font-size: 16px;
+                padding: 0px;
+                text-align: center;
+              "
+            >
+              Hover over the shaded countries to see details about interviewees
+            </p>
+          </div>
+          <svg id="map" width="800" height="800"></svg>
+        </div>
       </div>
-      <div id="treemap" style="text-align: center"></div>
     </div>
 
     <div class="row">
       <div class="line-break"></div>
-    </div>
-
-    <!-- Create an element where the map will take place -->
-    <div style="text-align: center">
-      <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
-        Geographic Locations of Interviewees
-      </h2>
-      <p
-        style="
-          font-family: 'Twentieth Century Light';
-          font-size: 16px;
-          padding: 0px;
-          text-align: center;
-        "
-      >
-        Hover over the shaded countries to see details about interviewees
-      </p>
-      <svg id="map" width="1000" height="800"></svg>
     </div>
 
     <footer class="container-fluid text-center">
@@ -388,7 +387,6 @@
             >World Map Tooltip</a
           >
         </div>
-
       </div>
     </footer>
   </body>
@@ -825,7 +823,7 @@
     var map = d3
         .select("#map")
         .append("svg")
-        .attr("width", 1000)
+        .attr("width", 800)
         .attr("height", 800),
       width = +map.attr("width"),
       height = +map.attr("height");
@@ -834,7 +832,7 @@
     var path = d3.geoPath();
     var projection = d3
       .geoMercator()
-      .scale(150)
+      .scale(100)
       .center([0, 20])
       .translate([width / 2, height / 2]);
 
@@ -845,7 +843,7 @@
     var colorScale = d3
       .scaleThreshold()
       .domain([10, 25, 50, 75, 100, 125, 150, 175, 200])
-      .range(d3.schemeBlues[7]);
+      .range(d3.schemeBlues[4]);
 
     // Load external data and boot
     d3.queue()
@@ -869,35 +867,46 @@
           .duration(200)
           .style("opacity", 1)
           .style("stroke", "black");
-        //debugger;
-        if (d.total == 0) { // Countries without data have 0 as their total
-          return tooltip.style("hidden", false)
-            .html(d.properties.name)
-        }
-        else {
-          return tooltip.style("hidden", false)
-          .html(d.properties.name + 
-                "<br>Interviewees: " + d.total[0] + 
-                "<br>Females: " + d.total[1] + 
-                "<br>Males: " + d.total[2]);
+        if (d.total == 0) {
+          // Countries without data have 0 as their total
+          return tooltip.style("hidden", false).html(d.properties.name);
+        } else {
+          return tooltip
+            .style("hidden", false)
+            .html(
+              d.properties.name +
+                "<br>Interviewees: " +
+                d.total[0] +
+                "<br>Females: " +
+                d.total[1] +
+                "<br>Males: " +
+                d.total[2]
+            );
         }
       };
 
       let mouseMove = function (d) {
-        if (d.total == 0) { // Countries without data have 0 as their total
-          tooltip.classed("hidden", false)
-          .style("top", (d3.event.pageY) + "px")
-          .style("left", (d3.event.pageX + 10) + "px")
-          .html(d.properties.name);
-        }
-        else {
-          tooltip.classed("hidden", false)
-          .style("top", (d3.event.pageY) + "px")
-          .style("left", (d3.event.pageX + 10) + "px")
-          .html(d.properties.name + 
-                "<br>Interviewees: " + d.total[0] + 
-                "<br>Females: " + d.total[1] + 
-                "<br>Males: " + d.total[2]);
+        if (d.total == 0) {
+          // Countries without data have 0 as their total
+          tooltip
+            .classed("hidden", false)
+            .style("top", d3.event.pageY + "px")
+            .style("left", d3.event.pageX + 10 + "px")
+            .html(d.properties.name);
+        } else {
+          tooltip
+            .classed("hidden", false)
+            .style("top", d3.event.pageY + "px")
+            .style("left", d3.event.pageX + 10 + "px")
+            .html(
+              d.properties.name +
+                "<br>Interviewees: " +
+                d.total[0] +
+                "<br>Females: " +
+                d.total[1] +
+                "<br>Males: " +
+                d.total[2]
+            );
         }
       };
 
@@ -906,11 +915,10 @@
           .transition()
           .duration(200)
           .style("opacity", 0.8);
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .style("stroke", "transparent");
+        d3.select(this).transition().duration(200).style("stroke", "white");
+
         tooltip.classed("hidden", true);
+        // tooltip.style("opacity", 0);
       };
 
       // Draw the map
@@ -925,256 +933,276 @@
         // set the color of each country
         .attr("fill", function (d) {
           d.total = data.get(d.id) || 0;
-          if (d.total == 0) { // Countries without data have 0 as their total
+          if (d.total == 0) {
+            // Countries without data have 0 as their total
             return colorScale(d.total);
-          }
-          else {
-            return colorScale(d.total[0]);
+          } else {
+            return colorScale(d.total);
           }
         })
         .style("stroke", "transparent")
         .attr("class", function (d) {
           return "Country";
         })
+        .attr("id", (d) => d.id)
         .style("opacity", 0.8)
         .on("mouseover", mouseOver)
         .on("mousemove", mouseMove)
         .on("mouseleave", mouseLeave);
-    }
 
-    /************** WORLD MAP END *******************/
+      /************** WORLD MAP END *******************/
 
-    /********************** TREE MAP *********************/
-    var treemap = document.getElementById("treemap");
-    var divWidth = treemap.offsetWidth;
-    var margin = { top: 40, right: 0, bottom: 20, left: 0 },
-      width = divWidth,
-      height = 900 - margin.top - margin.bottom,
-      formatNumber = d3.format(","),
-      transitioning;
-    // sets x and y scale to determine size of visible boxes
-    var x = d3.scaleLinear().domain([0, width]).range([0, width]);
-    var y = d3.scaleLinear().domain([0, height]).range([0, height]);
-    var treemap = d3
-      .treemap()
-      .size([width, height])
-      .paddingInner(0)
-      .round(false);
-    var svg = d3
-      .select("#treemap")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.bottom + margin.top)
-      .style("margin-left", -margin.left + "px")
-      .style("margin.right", -margin.right + "px")
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .style("shape-rendering", "crispEdges");
-    var grandparent = svg.append("g").attr("class", "grandparent");
-    grandparent
-      .append("rect")
-      .attr("y", -margin.top)
-      .attr("width", width)
-      .attr("height", margin.top);
-    // .attr("fill", "#bbbbbb");
-    grandparent
-      .append("text")
-      .attr("x", 10)
-      .attr("y", 10 - margin.top)
-      .attr("dy", "1em");
+      /********************** TREE MAP *********************/
+      var treemap = document.getElementById("treemap");
+      var divWidth = treemap.offsetWidth;
+      var margin = { top: 40, right: 0, bottom: 20, left: 0 },
+        width = divWidth,
+        height = 800 - margin.top - margin.bottom,
+        formatNumber = d3.format(","),
+        transitioning;
+      // sets x and y scale to determine size of visible boxes
+      var x = d3.scaleLinear().domain([0, width]).range([0, width]);
+      var y = d3.scaleLinear().domain([0, height]).range([0, height]);
+      var treemap = d3
+        .treemap()
+        .size([width, height])
+        .paddingInner(0)
+        .round(false);
+      var svg = d3
+        .select("#treemap")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.bottom + margin.top)
+        .style("margin-left", -margin.left + "px")
+        .style("margin.right", -margin.right + "px")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .style("shape-rendering", "crispEdges");
+      var grandparent = svg.append("g").attr("class", "grandparent");
+      grandparent
+        .append("rect")
+        .attr("y", -margin.top)
+        .attr("width", width)
+        .attr("height", margin.top);
+      grandparent
+        .append("text")
+        .attr("x", 10)
+        .attr("y", 10 - margin.top)
+        .attr("dy", "1em");
 
-    // load the data used for the treemap
-    d3.json("data/treemap_terms.json", (data) => {
-      var root = d3.hierarchy(data);
-      treemap(
-        root
-          .sum((d) => d.value)
-          .sort((a, b) => b.height - a.height || b.value - a.value)
-      );
-      display(root);
-      // display((d) => {
-
-      // });
-      function display(d) {
-        // write text into grandparent
-        // and activate click's handler
-        grandparent
-          .datum(d.parent)
-          .on("click", transition)
-          .select("text")
-          .text(name(d));
-
-        // grandparent color
-        grandparent
-          .datum(d.parent)
-          .select("rect")
-          .attr("fill", function () {
-            return "#FAF3F3";
-          });
-        var g1 = svg
-          .insert("g", ".grandparent")
-          .datum(d)
-          .attr("class", "depth");
-        var g = g1.selectAll("g").data(d.children).enter().append("g");
-        // add class and click handler to all g's with children
-        g.filter(function (d) {
-          return d.children;
-        })
-          .classed("children", true)
-          .on("click", transition);
-        g.selectAll(".child")
-          .data(function (d) {
-            return d.children || [d];
-          })
-          .enter()
-          .append("rect")
-          .attr("class", "child")
-          .call(rect);
-        // add title to parents
-        g.append("rect")
-          .attr("class", "parent")
-          .call(rect)
-          .append("title")
-          .text(function (d) {
-            return d.data.name;
-          });
-        /* Adding a foreign object instead of a text object, allows for text wrapping */
-        g.append("foreignObject")
-          .call(rect)
-          .attr("class", "foreignobj")
-          .append("xhtml:div")
-          .attr("dy", "1em")
-          .html(function (d) {
-            return (
-              "" +
-              '<p class="title"> ' +
-              (d.data.type != "Language" ? "" : "Language: ") +
-              d.data.name +
-              "</p>" +
-              (d.data.type == "Country" || d.data.type == "Continent"
-                ? "<p><strong style='font-size:16px'>" +
-                  formatNumber(d.data.language_count) +
-                  "</strong> languages represented</p>"
-                : "") +
-              (d.data.type != "Term"
-                ? "<p><strong style='font-size:16px'>" +
-                  formatNumber(d.value) +
-                  "</strong> distinct terms used</p>"
-                : "")
-            );
-          })
-          .attr("class", "textdiv"); //textdiv class allows us to style the text easily with CSS
-        function transition(d) {
-          if (transitioning || !d) return;
-          transitioning = true;
-          var g2 = display(d),
-            t1 = g1.transition().duration(650),
-            t2 = g2.transition().duration(650);
-          // Update the domain only after entering new elements.
-          x.domain([d.x0, d.x1]);
-          y.domain([d.y0, d.y1]);
-          // Enable anti-aliasing during the transition.
-          svg.style("shape-rendering", null);
-          // Draw child nodes on top of parent nodes.
-          svg.selectAll(".depth").sort(function (a, b) {
-            return a.depth - b.depth;
-          });
-          // Fade-in entering text.
-          g2.selectAll("text").style("fill-opacity", 0);
-          g2.selectAll("foreignObject div").style("display", "none");
-          /*added*/
-          // Transition to the new view.
-          t1.selectAll("text").call(text).style("fill-opacity", 0);
-          t2.selectAll("text").call(text).style("fill-opacity", 1);
-          t1.selectAll("rect").call(rect);
-          t2.selectAll("rect").call(rect);
-          /* Foreign object */
-          t1.selectAll(".textdiv").style("display", "none");
-          /* added */
-          t1.selectAll(".foreignobj").call(foreign);
-          /* added */
-          t2.selectAll(".textdiv").style("display", "block");
-          /* added */
-          t2.selectAll(".foreignobj").call(foreign);
-          /* added */
-          // Remove the old node when the transition is finished.
-          t1.on("end.remove", function () {
-            this.remove();
-            transitioning = false;
-          });
-        }
-        return g;
-      }
-      function text(text) {
-        text
-          .attr("x", function (d) {
-            return x(d.x) + 6;
-          })
-          .attr("y", function (d) {
-            return y(d.y) + 6;
-          });
-      }
-      function rect(rect) {
-        rect
-          .attr("x", function (d) {
-            return x(d.x0);
-          })
-          .attr("y", function (d) {
-            return y(d.y0);
-          })
-          .attr("width", function (d) {
-            return x(d.x1) - x(d.x0);
-          })
-          .attr("height", function (d) {
-            return y(d.y1) - y(d.y0);
-          })
-          .attr("fill", function (d) {
-            return "#FAF3F3";
-          });
-      }
-      function foreign(foreign) {
-        /* added */
-        foreign
-          .attr("x", function (d) {
-            return x(d.x0);
-          })
-          .attr("y", function (d) {
-            return y(d.y0);
-          })
-          .attr("width", function (d) {
-            return x(d.x1) - x(d.x0);
-          })
-          .attr("height", function (d) {
-            return y(d.y1) - y(d.y0);
-          });
-      }
-      function name(d) {
-        // ;
-        return (
-          breadcrumbs(d) +
-          (d.parent
-            ? " -  Click to zoom out"
-            : " - Click inside square to zoom in")
+      let treemapClicked = function (countryName) {
+        let countries = Array.from(d3.selectAll(".Country")["_groups"][0]);
+        let country = countries.find(
+          (c) => c.__data__.properties.name == countryName
         );
-      }
-      function breadcrumbs(d) {
-        var res = "";
-        var sep = " > ";
-        d.ancestors()
-          .reverse()
-          .forEach(function (i) {
-            res +=
-              (i.data.type == "Language" ? "Language: " : "") +
-              i.data.name +
-              sep;
-          });
-        return res
-          .split(sep)
-          .filter(function (i) {
-            return i !== "";
+        console.log("country clicked on: ", country);
+        let countryData = country.__data__;
+        let countryID = countryData.id;
+
+        // update opacity of country selected to 1 and other countries to 0.5
+        d3.selectAll(".Country").style("opacity", 0.5);
+        d3.select("#" + countryID)
+          .style("opacity", 1)
+          .style("stroke", "black");
+      };
+
+      // load the data used for the treemap
+      d3.json("data/treemap_terms.json", (data) => {
+        var root = d3.hierarchy(data);
+        treemap(
+          root
+            .sum((d) => d.value)
+            .sort((a, b) => b.height - a.height || b.value - a.value)
+        );
+        display(root);
+
+        function display(d) {
+          // write text into grandparent
+          // and activate click's handler
+          grandparent
+            .datum(d.parent)
+            .on("click", transition)
+            .select("text")
+            .text(name(d));
+
+          // grandparent color
+          grandparent
+            .datum(d.parent)
+            .select("rect")
+            .attr("fill", function () {
+              return "#FAF3F3";
+            });
+          var g1 = svg
+            .insert("g", ".grandparent")
+            .datum(d)
+            .attr("class", "depth");
+          var g = g1.selectAll("g").data(d.children).enter().append("g");
+          // add class and click handler to all g's with children
+          g.filter(function (d) {
+            return d.children;
           })
-          .join(sep);
-      }
-    });
+            .classed("children", true)
+            .on("click", transition);
+          g.selectAll(".child")
+            .data(function (d) {
+              return d.children || [d];
+            })
+            .enter()
+            .append("rect")
+            .attr("class", "child")
+            .call(rect);
+          // add title to parents
+          g.append("rect")
+            .attr("class", "parent")
+            .call(rect)
+            .append("title")
+            .text(function (d) {
+              return d.data.name;
+            });
+          /* Adding a foreign object instead of a text object, allows for text wrapping */
+          g.append("foreignObject")
+            .call(rect)
+            .attr("class", "foreignobj")
+            .append("xhtml:div")
+            .attr("dy", "1em")
+            .html(function (d) {
+              return (
+                "" +
+                '<p class="title"> ' +
+                (d.data.type != "Language" ? "" : "Language: ") +
+                d.data.name +
+                "</p>" +
+                (d.data.type == "Country" || d.data.type == "Continent"
+                  ? "<p><strong style='font-size:16px'>" +
+                    formatNumber(d.data.language_count) +
+                    "</strong> languages represented</p>"
+                  : "") +
+                (d.data.type != "Term"
+                  ? "<p><strong style='font-size:16px'>" +
+                    formatNumber(d.value) +
+                    "</strong> distinct terms used</p>"
+                  : "")
+              );
+            })
+            .attr("class", "textdiv"); //textdiv class allows us to style the text easily with CSS
+
+          function transition(d) {
+            // if the user clicks on a country, highlight the country on the world map
+            if (d.data.type == "Country") {
+              treemapClicked(d.data.name);
+            }
+            if (transitioning || !d) return;
+            transitioning = true;
+            var g2 = display(d),
+              t1 = g1.transition().duration(650),
+              t2 = g2.transition().duration(650);
+            // Update the domain only after entering new elements.
+            x.domain([d.x0, d.x1]);
+            y.domain([d.y0, d.y1]);
+            // Enable anti-aliasing during the transition.
+            svg.style("shape-rendering", null);
+            // Draw child nodes on top of parent nodes.
+            svg.selectAll(".depth").sort(function (a, b) {
+              return a.depth - b.depth;
+            });
+            // Fade-in entering text.
+            g2.selectAll("text").style("fill-opacity", 0);
+            g2.selectAll("foreignObject div").style("display", "none");
+            /*added*/
+            // Transition to the new view.
+            t1.selectAll("text").call(text).style("fill-opacity", 0);
+            t2.selectAll("text").call(text).style("fill-opacity", 1);
+            t1.selectAll("rect").call(rect);
+            t2.selectAll("rect").call(rect);
+            /* Foreign object */
+            t1.selectAll(".textdiv").style("display", "none");
+            /* added */
+            t1.selectAll(".foreignobj").call(foreign);
+            /* added */
+            t2.selectAll(".textdiv").style("display", "block");
+            /* added */
+            t2.selectAll(".foreignobj").call(foreign);
+            /* added */
+            // Remove the old node when the transition is finished.
+            t1.on("end.remove", function () {
+              this.remove();
+              transitioning = false;
+            });
+          }
+          return g;
+        }
+        function text(text) {
+          text
+            .attr("x", function (d) {
+              return x(d.x) + 6;
+            })
+            .attr("y", function (d) {
+              return y(d.y) + 6;
+            });
+        }
+        function rect(rect) {
+          rect
+            .attr("x", function (d) {
+              return x(d.x0);
+            })
+            .attr("y", function (d) {
+              return y(d.y0);
+            })
+            .attr("width", function (d) {
+              return x(d.x1) - x(d.x0);
+            })
+            .attr("height", function (d) {
+              return y(d.y1) - y(d.y0);
+            })
+            .attr("fill", function (d) {
+              return "#FAF3F3";
+            });
+        }
+        function foreign(foreign) {
+          /* added */
+          foreign
+            .attr("x", function (d) {
+              return x(d.x0);
+            })
+            .attr("y", function (d) {
+              return y(d.y0);
+            })
+            .attr("width", function (d) {
+              return x(d.x1) - x(d.x0);
+            })
+            .attr("height", function (d) {
+              return y(d.y1) - y(d.y0);
+            });
+        }
+        function name(d) {
+          // ;
+          return (
+            breadcrumbs(d) +
+            (d.parent
+              ? " -  Click to zoom out"
+              : " - Click inside square to zoom in")
+          );
+        }
+        function breadcrumbs(d) {
+          var res = "";
+          var sep = " > ";
+          d.ancestors()
+            .reverse()
+            .forEach(function (i) {
+              res +=
+                (i.data.type == "Language" ? "Language: " : "") +
+                i.data.name +
+                sep;
+            });
+          return res
+            .split(sep)
+            .filter(function (i) {
+              return i !== "";
+            })
+            .join(sep);
+        }
+        /*********** TREE MAP END *******************/
+      });
+    }
   </script>
 </html>
