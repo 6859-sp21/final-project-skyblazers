@@ -451,16 +451,21 @@
             </p>
             </div>
             <svg id="map" width="600" height="400" style = "text-align: center"></svg>
-            
-          </div>
-          
+            <br>
+            <div id="treemapClickedInfobox" style="text-align: left">
+              <p
+              style="
+                color: grey;
+                font-family: 'Twentieth Century Light';
+                text-align: center;
+              "
+            >
+                Click on a country to see demographic information of interviewees.
+            </p>
+            </div>
           </div>
         </div>
       </div>
-      <div class = "container">
-        <div id="treemapClickedInfobox" width = "400" height = "400" style="text-align: left"></div>
-      </div>
-      
       <div id="treemap" style="text-align: center"></div>
       <hr>
       </div>
@@ -907,9 +912,8 @@
 
     var circleGraph = d3
     .select("#treemapClickedInfobox")
-    .append('svg')
-    .attr("width", 400)
-    .attr('height', 400)
+    .attr("width", 200)
+    .attr('height', 200)
     .append('g')
     .attr('transform', "translate(" + width / 2 + "," + height / 2 + ")")
 
@@ -1089,39 +1093,12 @@
 
         //********************************CIRCLE GRAPH***********************************
 
-        console.log(countryData.total)
-        var radius = Math.min(200, 400) / 2 - 40
-
-        var color = d3.scaleOrdinal()
-  .domain(countryData.total)
-  .range(["#98abc5", "#8a89a6", "#8a89a6"])
-
-  var pie = d3.pie()
-  .value(function(d) { console.log(d); console.log(d.value); return d.value; })
-var data_ready = pie(d3.entries(countryData.total))
-console.log('datta_ready', data_ready)
-
-// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-circleGraph
-  .selectAll('.circle')
-  .data(data_ready)
-  .enter()
-  .append('path')
-  .attr('d', d3.arc()
-    .innerRadius(0)
-    .outerRadius(radius)
-  )
-  .attr('fill', function(d){ console.log('do we get herre?)'); return(color(d.key)) })
-  .attr("stroke", "black")
-  .style("stroke-width", "2px")
-  .style("opacity", 0.7)
-
-        // document.getElementById("treemapClickedInfobox").innerHTML =
-        //   countryData.total == 0
-        //     ? `<strong>${countryData.properties.name}</strong>'s interviewee demographic<br>No interviewee information available`
-        //     : `<strong>${countryData.properties.name}</strong>'s interviewee demographic<br>Interviewees: ${countryData.total[0]}
-        // <br>Females: ${countryData.total[1]}
-        // <br>Males: ${countryData.total[2]}`;
+        document.getElementById("treemapClickedInfobox").innerHTML =
+          countryData.total == 0
+            ? `<strong>${countryData.properties.name}</strong>'s interviewee demographic<br>No interviewee information available`
+            : `<strong>${countryData.properties.name}</strong>'s interviewee demographic<br>Interviewees: ${countryData.total[0]}
+        <br>Females: ${countryData.total[1]}
+        <br>Males: ${countryData.total[2]}`;
       };
 
 
