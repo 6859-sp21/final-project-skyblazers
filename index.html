@@ -16,11 +16,11 @@
   rel="stylesheet"
   href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
 />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"></script>
-<link
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.js"></script>
+<!-- <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css"
-/>
+/> -->
 
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
@@ -114,6 +114,18 @@
       border-radius: 4px;
       padding: 10px;
       stroke-width: 2px;
+    }
+
+    .btn-secondary:active,
+    .btn-secondary:active:focus,
+    .btn-secondary:visited,
+    .btn-secondary:focus {
+      background-color: #8ac4d0;
+      outline: #8ac4d0;
+    }
+
+    .btn-secondary:hover {
+      background-color: #a6a6a6;
     }
 
     /* Treemap styles */
@@ -312,32 +324,84 @@
               text-align: center;
             "
           >
-            Move the slider to see words with a certain number of occurences.
+            Click the classes to see words with the desired number of
+            occurences.
           </p>
 
-          <div class="slidecontainer">
-            <!-- <input
-              id="wordSlider"
+          <div class="row">
+            <div class="col">
+              <div
+                class="btn-toolbar"
+                role="toolbar"
+                style="
+                  align-items: center;
+                  text-align: center;
+                  display: block;
+                  flex-wrap: nowrap;
+                  justify-content: center;
+                "
+              >
+                <div class="btn-group mr-2" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    style="font-size: 10px"
+                    value="10"
+                    id="wordSlider1"
+                  >
+                    0 - 10
+                  </button>
+                </div>
+
+                <div class="btn-group mr-2" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    style="font-size: 20px"
+                    value="20"
+                    id="wordSlider2"
+                  >
+                    11- 20
+                  </button>
+                </div>
+
+                <div class="btn-group mr-2" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-secondary active"
+                    style="font-size: 40px"
+                    value="30"
+                    id="wordSlider3"
+                  >
+                    20+
+                  </button>
+                </div>
+                <!-- <div class="btn-group mr-2" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    style="font-size: 20px"
+                  >
+                    All
+                  </button>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="range"> -->
+        <!-- <input
               type="range"
-              data-provide="slider"
-              data-slider-ticks="[5, 10, 15, 20, 30]"
-              data-slider-ticks-labels='["1 - 5", "6 - 10", "11 - 15", "16 - 20", "20+"]'
-              ddata-sliider-ticks-snap-bounds="5"
-              data-slider-min="5"
-              data-slider-max="30"
-              data-slider-step="5"
-              data-slider-value="10"
-            /> -->
-            <input
-              type="range"
-              min="1"
+              min="0"
               max="25"
               value="10"
+              step="5"
               class="slider"
               id="wordSlider"
             />
-          </div>
-        </div>
+          </div> -->
+        <!-- </div> -->
       </div>
       <div class="row">
         <div class="col-sm-6">
@@ -661,16 +725,12 @@
             .fontSize(function (d) {
               // binning font size by count; discuss in write up
               // console.log("later d", d);
-              if (d.size <= 5) {
+              if (d.size <= 10) {
                 return 10;
-              } else if (d.size <= 10) {
+              } else if (d.size > 10 && d.size <= 20) {
                 return 20;
-              } else if (d.size <= 15) {
-                return 30;
-              } else if (d.size <= 20) {
-                return 40;
               } else {
-                return 50;
+                return 40;
               }
             })
             .on("end", draw);
@@ -717,16 +777,23 @@
               )
               .padding(5)
               .fontSize(function (d) {
-                if (d.size <= 5) {
+                // if (d.size <= 5) {
+                //   return 10;
+                // } else if (d.size <= 10) {
+                //   return 20;
+                // } else if (d.size <= 15) {
+                //   return 30;
+                // } else if (d.size <= 20) {
+                //   return 40;
+                // } else {
+                //   return 50;
+                // }
+                if (d.size <= 10) {
                   return 10;
-                } else if (d.size <= 10) {
+                } else if (d.size > 10 && d.size <= 20) {
                   return 20;
-                } else if (d.size <= 15) {
-                  return 30;
-                } else if (d.size <= 20) {
-                  return 40;
                 } else {
-                  return 50;
+                  return 40;
                 }
               })
               .on("end", updateCloud);
@@ -762,19 +829,45 @@
                 return d.text;
               });
           }
-          d3.select("#wordSlider").on("change", function (d) {
-            console.log(d3.select(this).property("data-slider-value"));
-
-            var selectedCount = d3.select(this).property("data-slider-value");
+          d3.select("#wordSlider1").on("click", function (d) {
+            var selectedCount = d3.select(this).property("value");
 
             var filteredData = getListofTerms(currentColor.all_terms);
 
             var filteredWords = filteredData.filter(function (d) {
-              if (d.count <= selectedCount) {
+              if (d.count > selectedCount - 10 && d.count <= selectedCount) {
                 return d;
               }
             });
-            console.log("filteredWords:", filteredWords);
+
+            updateWordMap(filteredWords);
+          });
+
+          d3.select("#wordSlider2").on("click", function (d) {
+            var selectedCount = d3.select(this).property("value");
+
+            var filteredData = getListofTerms(currentColor.all_terms);
+
+            var filteredWords = filteredData.filter(function (d) {
+              if (d.count > selectedCount - 10 && d.count <= selectedCount) {
+                return d;
+              }
+            });
+
+            updateWordMap(filteredWords);
+          });
+
+          d3.select("#wordSlider3").on("click", function (d) {
+            var selectedCount = d3.select(this).property("value");
+
+            var filteredData = getListofTerms(currentColor.all_terms);
+
+            var filteredWords = filteredData.filter(function (d) {
+              if (d.count > selectedCount - 10 && d.count <= selectedCount) {
+                return d;
+              }
+            });
+
             updateWordMap(filteredWords);
           });
         }
