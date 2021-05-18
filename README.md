@@ -8,10 +8,17 @@
 
 We created a fun and interactive way for you to explore how colors are represented around the world! Click [HERE](https://6859-sp21.github.io/final-project-skyblazers/) to see our visuals! 
 
+<<<<<<< HEAD
 Here is a list of links to our:
 1. [Video Teaser](https://drive.google.com/file/d/13DZAPFANdUmeY6h7PiHlcA2FpUloDjQJ/view?usp=sharing)
 2. Paper: TBD
 3. [Project Page](https://6859-sp21.github.io/final-project-skyblazers/)
+=======
+Here are links to our:
+1. Video Teaser: https://drive.google.com/file/d/13DZAPFANdUmeY6h7PiHlcA2FpUloDjQJ/view?usp=sharing
+2. Paper: https://github.com/6859-sp21/final-project-skyblazers/tree/main/final 
+3. Project Page: https://6859-sp21.github.io/final-project-skyblazers/
+>>>>>>> 0b778c891a21eec775460ee67cddf249938a57f0
 
 ## Installation
 
@@ -35,11 +42,11 @@ Another key learning from A4 was to divide and conquer. From the get-go, we took
 
 We decided to split up the development work in the following manner:
 
-- Christina: Munsell color palette, word cloud
-- Elizabeth: Tree map, data cleansing
-- Sravani: UI design, Choropleth map
+- Christina: Munsell color palette, word cloud, project page
+- Elizabeth: Tree map, data cleansing, video teaser
+- Sravani: UI design, Choropleth map, write ups
 
-Although we took ownership of those sections, there was lots of overlap because we all helped each other resolve errors along the way. After many working sessions and iterations, we got the dashboard to be fully functional! Over the past few weeks, we collectively spent around 96 hours. Although we had some D3 experience and front-end development experience from A4, our team is still at a beginner level and required more time to complete these interactive assignments. We had a significant learning curve in the class, but it was all worth it!
+Although we took ownership of those sections, there was lots of overlap because we all helped each other resolve errors along the way. After many working sessions and iterations, we got the dashboard to be fully functional! Over the past few weeks, we collectively spent around 100 hours. Although we had some D3 experience and front-end development experience from A4, our team is still at a beginner level and required more time to complete these interactive assignments. We had a significant learning curve in the class, but it was all worth it!
 
 ## Authors and acknowledgment
 
