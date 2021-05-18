@@ -173,6 +173,7 @@
       padding: 10px;
       cursor: pointer;
       overflow: none;
+      word-wrap: break-word;
     }
     .textdiv .title {
       font-family: "Twentieth Century Bold";
@@ -292,37 +293,50 @@
 
       <div class="tooltip"></div>
 
+      <!-- <div class="row" style="text-align: center"> -->
+      <div>
+        <h2 style="font-family: 'Twentieth Century Light'; text-align: center">
+          Explore the map below to discover each language's "Color Vocabulary"
+          and the geographic locations of interviewees
+        </h2>
+      </div>
+      <!-- </div> -->
+      <br />
       <div class="row">
         <div class="col-7">
           <div id="treemap-title">
-            <h2
+            <h3
               style="font-family: 'Twentieth Century Light'; text-align: center"
             >
-              Explore the map below to discover each language's "Color
-              Vocabulary" – the number of distinct terms used to describe the
-              colors presented in the study
-            </h2>
+              Discover each language's "Color Vocabulary" – the number of
+              distinct terms used to describe the colors
+            </h3>
+            <h5
+              style="font-family: 'Twentieth Century Light'; text-align: center"
+            >
+              Clicking on a country below shows the geographic demographic data
+              of the interviewees on the world map
+            </h5>
           </div>
           <div id="treemap" style="text-align: center"></div>
         </div>
         <div class="col-5">
           <!-- Create an element where the map will take place -->
           <div style="text-align: center">
-            <h2
+            <h3
               style="font-family: 'Twentieth Century Light'; text-align: center"
             >
               Geographic Locations of Interviewees
-            </h2>
-            <p
+            </h3>
+            <h5
               style="
                 font-family: 'Twentieth Century Light';
-                font-size: 16px;
                 padding: 0px;
                 text-align: center;
               "
             >
               Hover over the shaded countries to see details about interviewees
-            </p>
+            </h5>
           </div>
           <svg id="map" width="800" height="800"></svg>
           <div id="treemapClickedInfobox" style="text-align: left"></div>
@@ -863,11 +877,8 @@
           .transition()
           .duration(200)
           .style("opacity", 0.5);
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .style("opacity", 1)
-          .style("stroke", "black");
+        d3.select(this).transition().duration(200).style("opacity", 1);
+        // .style("stroke", "black");
         if (d.total == 0) {
           // Countries without data have 0 as their total
           return tooltip.style("hidden", false).html(d.properties.name);
@@ -916,7 +927,7 @@
           .transition()
           .duration(200)
           .style("opacity", 0.8);
-        d3.select(this).transition().duration(200).style("stroke", "white");
+        d3.select(this).transition().duration(200); //.style("stroke", "white");
 
         tooltip.classed("hidden", true);
         // tooltip.style("opacity", 0);
@@ -1002,15 +1013,14 @@
         let countryID = countryData.id;
 
         // update opacity of country selected to 1 and other countries to 0.5
-        d3.selectAll(".Country").style("opacity", 0.5);
-        d3.select("#" + countryID)
-          .style("opacity", 1)
-          .style("stroke", "black");
+        d3.selectAll(".Country").style("opacity", 0.25);
+        d3.select("#" + countryID).style("opacity", 1);
+        // .style("stroke", "black");
 
-        document.getElementById(
-          "treemapClickedInfobox"
-        ).innerHTML = `<strong>${countryData.properties.name}</strong>'s interviewee demographic
-        <br>Interviewees: ${countryData.total[0]}
+        document.getElementById("treemapClickedInfobox").innerHTML =
+          countryData.total == 0
+            ? `<strong>${countryData.properties.name}</strong>'s interviewee demographic<br>No interviewee information available`
+            : `<strong>${countryData.properties.name}</strong>'s interviewee demographic<br>Interviewees: ${countryData.total[0]}
         <br>Females: ${countryData.total[1]}
         <br>Males: ${countryData.total[2]}`;
       };
