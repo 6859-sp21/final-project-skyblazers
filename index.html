@@ -397,19 +397,6 @@
             </div>
           </div>
         </div>
-
-        <!-- <div class="range"> -->
-        <!-- <input
-              type="range"
-              min="0"
-              max="25"
-              value="10"
-              step="5"
-              class="slider"
-              id="wordSlider"
-            />
-          </div> -->
-        <!-- </div> -->
       </div>
       <div class="row">
         <div class="col-sm-6">
@@ -660,14 +647,12 @@
             if (button.text() == "Pause") {
               moving = false;
               clearInterval(timer);
-              // timer = 0;
               button.text("Play");
             } else {
               moving = true;
-              timer = setInterval(step, 3000);
+              timer = setInterval(step, 2500);
               button.text("Pause");
             }
-            console.log("Slider moving: " + moving);
           });
 
           function step() {
@@ -704,9 +689,7 @@
               moving = false;
               currentValue = 0;
               clearInterval(timer);
-              // timer = 0;
               playButton.text("Play");
-              console.log("Slider moving: " + moving);
             }
           }
 
@@ -728,24 +711,15 @@
             .size([width, height])
             .words(
               colorWords.map(function (d) {
-                // console.log(
-                //   "selection",
-                //   d3.select("#wordSlider").property("value")
-                // );
-                // console.log(d);
-                // if (d.count <= d3.select("#wordSlider").property("value")) {
-                //   console.log("inside the if", d);
                 return {
                   text: d.term,
                   size: d.count,
                 };
-                // }
               })
             )
             .padding(5)
             .fontSize(function (d) {
               // binning font size by count; discuss in write up
-              // console.log("later d", d);
               if (d.size <= 10) {
                 return 10;
               } else if (d.size > 10 && d.size <= 20) {
@@ -798,17 +772,6 @@
               )
               .padding(5)
               .fontSize(function (d) {
-                // if (d.size <= 5) {
-                //   return 10;
-                // } else if (d.size <= 10) {
-                //   return 20;
-                // } else if (d.size <= 15) {
-                //   return 30;
-                // } else if (d.size <= 20) {
-                //   return 40;
-                // } else {
-                //   return 50;
-                // }
                 if (d.size <= 10) {
                   return 10;
                 } else if (d.size > 10 && d.size <= 20) {
@@ -911,7 +874,6 @@
         .attr("height", 800),
       width = +map.attr("width"),
       height = +map.attr("height");
-    // debugger;
     // Map and projection
     var path = d3.geoPath();
     var projection = d3
@@ -951,7 +913,7 @@
           .duration(200)
           .style("opacity", 1)
           .style("stroke", "black");
-        //debugger;
+
         if (d.total == 0) {
           // Countries without data have 0 as their total
           return tooltip.style("hidden", false).html(d.properties.name);
@@ -1081,7 +1043,6 @@
     d3.json("data/treemap_terms.json", (data) => {
       // debugger;
       var root = d3.hierarchy(data);
-      // console.log("root is", root);
       treemap(
         root
           .sum((d) => d.value)
