@@ -116,12 +116,19 @@
       stroke-width: 2px;
     }
 
+    .btn {
+      font-family: "Twentieth Century Bold";
+    }
+
+    .btn-link:focus {
+      text-decoration: underline;
+    }
+
     .btn-secondary:active,
     .btn-secondary:active:focus,
     .btn-secondary:visited,
     .btn-secondary:focus {
       background-color: #8ac4d0;
-      outline: #8ac4d0;
     }
 
     .btn-secondary:hover {
@@ -361,14 +368,14 @@
                     value="20"
                     id="wordSlider2"
                   >
-                    11- 20
+                    11 - 20
                   </button>
                 </div>
 
                 <div class="btn-group mr-2" role="group">
                   <button
                     type="button"
-                    class="btn btn-secondary active"
+                    class="btn btn-secondary"
                     style="font-size: 40px"
                     value="30"
                     id="wordSlider3"
@@ -376,15 +383,16 @@
                     20+
                   </button>
                 </div>
-                <!-- <div class="btn-group mr-2" role="group">
+                <div class="btn-group mr-2" role="group">
                   <button
                     type="button"
-                    class="btn btn-link"
+                    class="btn btn-link autofocus"
                     style="font-size: 20px"
+                    id="wordSlider4"
                   >
                     All
                   </button>
-                </div> -->
+                </div>
               </div>
             </div>
           </div>
@@ -565,6 +573,19 @@
             chipTermDict,
             termAbbrevTermDict
           );
+
+          d3.select("#selectedSquare")
+            .style("stroke", "black")
+            .style("opacity", 1)
+            .style(
+              "background-color",
+              d3.lab(
+                parseFloat(currentColor["L*"]),
+                parseFloat(currentColor["a*"]),
+                parseFloat(currentColor["b*"]),
+                (opacity = 1)
+              )
+            );
 
           var row = grid
             .selectAll(".row")
@@ -869,6 +890,12 @@
             });
 
             updateWordMap(filteredWords);
+          });
+
+          d3.select("#wordSlider4").on("click", function (d) {
+            var filteredData = getListofTerms(currentColor.all_terms);
+
+            updateWordMap(filteredData);
           });
         }
       );
