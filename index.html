@@ -325,6 +325,7 @@
             </p>
           </div>
           <svg id="map" width="800" height="800"></svg>
+          <div id="treemapClickedInfobox" style="text-align: left"></div>
         </div>
       </div>
     </div>
@@ -995,8 +996,9 @@
         let country = countries.find(
           (c) => c.__data__.properties.name == countryName
         );
-        console.log("country clicked on: ", country);
+
         let countryData = country.__data__;
+        console.log("country clicked on: ", countryData);
         let countryID = countryData.id;
 
         // update opacity of country selected to 1 and other countries to 0.5
@@ -1004,6 +1006,13 @@
         d3.select("#" + countryID)
           .style("opacity", 1)
           .style("stroke", "black");
+
+        document.getElementById(
+          "treemapClickedInfobox"
+        ).innerHTML = `<strong>${countryData.properties.name}</strong>'s interviewee demographic
+        <br>Interviewees: ${countryData.total[0]}
+        <br>Females: ${countryData.total[1]}
+        <br>Males: ${countryData.total[2]}`;
       };
 
       // load the data used for the treemap
@@ -1090,6 +1099,11 @@
             // if the user clicks on a country, highlight the country on the world map
             if (d.data.type == "Country") {
               treemapClicked(d.data.name);
+            } else {
+              if (d.data.type == "Continent") {
+                document.getElementById("treemapClickedInfobox").innerHTML = "";
+                d3.selectAll(".Country").style("opacity", 1);
+              }
             }
             if (transitioning || !d) return;
             transitioning = true;
