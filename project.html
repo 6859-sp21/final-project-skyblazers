@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="https://d3js.org/topojson.v2.min.js"></script>
+<script src="https://d3js.org/d3-queue.v3.min.js"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"
+  charset="utf-8"
+></script>
+<script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
+<link rel="shortcut icon" href="/favicon.ico" />
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+
+<html>
+  <style type="text/css">
+    @font-face {
+      font-family: "Twentieth Century Medium";
+      src: url("fonts/TwentiethCenturyforKenmoreMedium.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "Twentieth Century Semi Bold";
+      src: url("fonts/TwentiethCenturyforKenmoreSemibold.ttf")
+        format("truetype");
+    }
+    @font-face {
+      font-family: "Twentieth Century Light";
+      src: url("fonts/TwentiethCenturyforKenmoreLight.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "Twentieth Century Bold";
+      src: url("fonts/TwentiethCenturyforKenmoreBold.ttf") format("truetype");
+    }
+    p.customfont {
+      font-family: "Twentieth Century Medium", "Twentieth Century Semi Bold",
+        "Twentieth Century Light", "Twentieth Century Bold";
+    }
+  </style>
+
+  <style>
+    .wcs-title {
+      margin: 0;
+      padding: 0px;
+      text-align: center;
+      position: sticky;
+    }
+
+    .subtitle {
+      margin: 0;
+      padding: 0px;
+      text-align: center;
+    }
+
+    .line-break {
+      background: #ececec;
+      border-left: 6px;
+      height: 100px;
+    }
+
+    .line-break-vertical {
+      background: #ececec;
+      width: 100%;
+      height: 3px;
+      margin-left: 3em auto;
+      margin-right: 3em auto;
+      margin-bottom: 3em auto;
+    }
+
+    #grid {
+      row-gap: 100px;
+    }
+
+    #words {
+      font-family: "Twentieth Century Light";
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    div.tooltip {
+      color: #222;
+      background: #fff;
+      border-radius: 3px;
+      box-shadow: 0px 0px 2px 0px #a6a6a6;
+      padding: 0.2em;
+      text-shadow: #f5f5f5 0 1px 0;
+      opacity: 0.9;
+      position: absolute;
+      font-family: "Twentieth Century Light";
+    }
+
+    footer {
+      font-family: "Twentieth Century Light";
+      padding: 50px;
+    }
+
+    .square {
+      height: 30px;
+      width: 30px;
+      border-radius: 4px;
+      padding: 10px;
+      stroke-width: 2px;
+    }
+
+    .btn {
+      font-family: "Twentieth Century Bold";
+    }
+
+    .btn-link:focus {
+      text-decoration: underline;
+    }
+
+    .btn-secondary:active,
+    .btn-secondary:active:focus,
+    .btn-secondary:visited,
+    .btn-secondary:focus {
+      background-color: #8ac4d0;
+    }
+
+    .btn-secondary:hover {
+      background-color: #a6a6a6;
+    }
+
+    /* Treemap styles */
+    /* background: #FAF3F3 */
+    #treemap {
+      max-width: 100%;
+      overflow: auto;
+    }
+    text {
+      pointer-events: none;
+    }
+    .grandparent text {
+      font-weight: bold;
+      font-family: "Twentieth Century Bold";
+      font-size: 20px;
+    }
+    rect {
+      stroke: white;
+      stroke-width: 1px;
+    }
+    rect.parent,
+    .grandparent rect {
+      stroke-width: 3px;
+    }
+    .grandparent:hover rect {
+      fill: #e4bad4;
+    }
+    .children rect.parent,
+    .grandparent rect {
+      cursor: pointer;
+    }
+    .children rect.child {
+      opacity: 0;
+    }
+    .children rect.parent {
+    }
+    .children:hover rect.child {
+      opacity: 1;
+      stroke-width: 1px;
+      fill: #f6dfeb;
+    }
+    .children:hover rect.parent {
+      opacity: 0;
+    }
+    .legend {
+      margin-bottom: 8px !important;
+    }
+    .legend rect {
+      stroke-width: 0px;
+    }
+    .legend text {
+      text-anchor: middle;
+      pointer-events: auto;
+      font-size: 15px;
+      font-family: sans-serif;
+      fill: black;
+    }
+    .form-group {
+      text-align: left;
+    }
+    .textdiv {
+      font-family: "Twentieth Century Bold";
+      font-size: 14px;
+      padding: 10px;
+      cursor: pointer;
+      overflow: none;
+      word-wrap: break-word;
+    }
+    .textdiv .title {
+      font-family: "Twentieth Century Bold";
+      font-size: 102%;
+      font-weight: bold;
+      margin-top: 5px;
+      font-size: 18px !important;
+    }
+    .textdiv p {
+      line-height: 15px;
+      margin: 0 0 3px !important;
+      padding: 0px;
+      font-size: 15px !important;
+    }
+    /***** TREE MAP STYLES END *****/
+  </style>
+  <head> </head>
+  <body>
+    <div class="wcs-title">
+      <div class="container text-center">
+        <div class="row">
+          <div class="col" style="padding: 0px">
+            <img
+              src="images/world_globe.png"
+              alt="logo"
+              style="margin-bottom: 20px; margin-top: 10px"
+            />
+            <h1
+              style="font-family: 'Twentieth Century Medium'; font-size: 48px"
+            >
+              World <span style="color: #95e1d3">C</span
+              ><span style="color: #8ac4d0">o</span
+              ><span style="color: #fce38a">l</span
+              ><span style="color: #ff75a0">o</span
+              ><span style="color: #845ec2">r</span> Survey
+            </h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subtitle">
+      <div class="container text-center">
+        <div class="row">
+          <div class="col" style="padding: 0px">
+            <h2 style="font-family: 'Twentieth Century Light'; font-size: 24px">
+              110 UNWRITTEN LANGUAGES, EACH 24 NATIVE SPEAKERS
+            </h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" style="padding: 0px">
+            <p style="font-family: 'Twentieth Century Light'; font-size: 16px">
+              WCS was initiated in the late 1970s to investigate how native
+              speakers around the world classify colors. 24 members of 110
+              societies with unwritten languages were asked to name 330 Munsell
+              color chips. Explore the results below!
+            </p>
+          </div>
+        </div>
+        <hr />
+      </div>
+    </div>
+
+    <div class="container text-center">
+      <div class="row">
+        <div class="col-sm-6">
+          <h2
+            style="
+              font-family: 'Twentieth Century Light';
+              font-size: 24px;
+              text-align: center;
+            "
+          >
+            330 Munsell Chips
+          </h2>
+          <p
+            style="
+              color: grey;
+              font-family: 'Twentieth Century Light';
+              text-align: center;
+            "
+          >
+            Click on a color to see the native color descriptions or press
+            <strong>Play</strong>
+            to cycle through all descriptions at once.
+          </p>
+          <div class="row">
+            <div class="col-sm-5">
+              <p
+                style="
+                  color: grey;
+                  font-family: 'Twentieth Century Light';
+                  margin-left: 50px;
+                "
+              >
+                Current Color Selection:
+              </p>
+            </div>
+            <div class="col-sm-3">
+              <div class="square" id="selectedSquare"></div>
+            </div>
+            <div class="col-sm-4">
+              <button
+                class="btn btn-primary"
+                style="margin-left: 60px"
+                id="play-button"
+              >
+                Play
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <h2
+            style="
+              font-family: 'Twentieth Century Light';
+              font-size: 24px;
+              text-align: center;
+            "
+          >
+            Native Color Descriptions
+          </h2>
+          <p
+            style="
+              color: grey;
+              font-family: 'Twentieth Century Light';
+              text-align: center;
+            "
+          >
+            Click the classes to see words with the desired number of
+            occurences.
+          </p>
+
+          <div class="row">
+            <div class="col">
+              <div
+                class="btn-toolbar"
+                role="toolbar"
+                style="
+                  align-items: center;
+                  text-align: center;
+                  display: block;
+                  flex-wrap: nowrap;
+                  justify-content: center;
+                "
+              >
+                <div class="btn-group mr-2" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    style="font-size: 10px"
+                    value="10"
+                    id="wordSlider1"
+                  >
+                    0 - 10
+                  </button>
+                </div>
+
+                <div class="btn-group mr-2" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    style="font-size: 20px"
+                    value="20"
+                    id="wordSlider2"
+                  >
+                    11 - 20
+                  </button>
+                </div>
+
+                <div class="btn-group mr-2" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    style="font-size: 40px"
+                    value="30"
+                    id="wordSlider3"
+                  >
+                    20+
+                  </button>
+                </div>
+                <div class="btn-group mr-2" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-link autofocus"
+                    style="font-size: 20px"
+                    id="wordSlider4"
+                  >
+                    All
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div id="grid" style="padding-left: 50px"></div>
+        </div>
+        <div class="col-sm-6">
+          <div id="words"></div>
+        </div>
+      </div>
+      <hr />
+    </div>
+    <br>
+    <div class="tooltip"></div>
+
+      <div class = "container text-center">
+        <div class="row">
+          <div class="col-sm-6">
+            <div id="treemap-title">
+              <h2
+              style="
+                font-family: 'Twentieth Century Light';
+                font-size: 24px;
+                text-align: center;
+              "
+            >
+                Geographic Color Vocabulary
+              </h2>
+              <p
+              style="
+                color: grey;
+                font-family: 'Twentieth Century Light';
+                text-align: center;
+              "
+            >
+                Clicking on a country below shows the number of distinct terms used to describe colors.
+            </p>
+            </div>
+            <div id="treemap" style="text-align: center"></div>
+          </div>
+          <div class="col-sm-6">
+            <!-- Create an element where the map will take place -->
+            <div style="text-align: center">
+              <h2
+              style="
+                font-family: 'Twentieth Century Light';
+                font-size: 24px;
+                text-align: center;
+              "
+            >
+                Interviewee Demographics
+              </h2>
+              <p
+              style="
+                color: grey;
+                font-family: 'Twentieth Century Light';
+                text-align: center;
+              "
+            >
+                Hover over the shaded countries to see details about interviewees.
+            </p>
+            </div>
+            <svg id="map" width="600" height="400" style = "text-align: center"></svg>
+            <br>
+            <div id="treemapClickedInfobox" style="text-align: left">
+              <p
+              style="
+                color: grey;
+                font-family: 'Twentieth Century Light';
+                text-align: center;
+              "
+            >
+                Click on a country to see demographic information of interviewees.
+            </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="treemap" style="text-align: center"></div>
+      <hr>
+      </div>
+
+
+    <footer class="container text-center">
+      <div class="row">
+        <div class="col-sm-12">
+          <h4
+            style="
+              font-family: 'Twentieth Century Light';
+              font-size: 24px;
+              margin-bottom: 0px;
+            "
+          >
+            SUPPORT
+          </h4>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <a href="https://www.kaggle.com/jboysen/color-survey?select=dict.txt "
+            >Dataset</a
+          >
+        </div>
+        <div class="col-sm-4">
+          <a href="https://www.cufonfonts.com/font/twentieth-century">Fonts</a>
+        </div>
+        <div class="col-sm-4">
+          <a
+            href="https://github.com/d3/d3-scale-chromatic/blob/master/README.md"
+            >Color Grid Link TBD</a
+          >
+        </div>
+        <div class="col-sm-4">
+          <a href="https://www.jing.fm/iclipt/xbioo/">Logo</a>
+        </div>
+        <div class="col-sm-4">
+          <a
+            href="http://bl.ocks.org/guglielmo/16d880a6615da7f502116220cb551498"
+            >Treemap</a
+          >
+        </div>
+        <div class="col-sm-4">
+          <a
+            href="https://www.d3-graph-gallery.com/graph/choropleth_hover_effect.html"
+            >Choropleth Map</a
+          >
+        </div>
+        <div class="col-sm-4">
+          <a
+            href="https://blockbuilder.org/abrahamdu/50147e692857054c2bf88c443946e8a5"
+            >World Map Tooltip</a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+  <script src="js/loadData.js"></script>
+  <script>
+    d3.queue()
+      .defer(d3.csv, "data/colors.csv")
+      .defer(d3.csv, "data/languages.csv")
+      .defer(d3.csv, "data/language_term_dict.csv")
+      .defer(d3.csv, "data/chip_term_dict.csv")
+      .defer(d3.csv, "data/speakers.csv")
+      .await(
+        (error, mycolor, languages, langTermDict, chipTermDict, speakers) => {
+          let termAbbrevTermDict = getTermAbbrevToTermDict(langTermDict);
+
+          var gridData = getGridData(mycolor);
+
+          var tooltip = d3
+            .select("#grid")
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px");
+
+          let mouseOver = function (d) {
+            tooltip.style("opacity", 1);
+            d3.select(this).style("stroke", "black").style("opacity", 1);
+          };
+
+          let mouseLeave = function (d) {
+            tooltip.style("opacity", 0);
+            d3.select(this).style("stroke", "white").style("opacity", 1);
+            if (d.click % 2 == 0) {
+              d3.select(this).style("stroke", "black").style("opacity", 1);
+            }
+          };
+
+          let mouseMove = function (d) {
+            tooltip
+              .html(
+                "Cell Color <br>L*:  " +
+                  d.color.l +
+                  "<br>a*: " +
+                  d.color.a +
+                  "<br>b*: " +
+                  d.color.b
+              )
+              .style("left", d3.mouse(this)[0] + 70 + "px")
+              .style("top", d3.mouse(this)[1] + "px");
+            d3.select(this).style("stroke", "black").style("opacity", 1);
+          };
+
+          var grid = d3
+            .select("#grid")
+            .append("svg")
+            .attr("width", "600px")
+            .attr("height", "600px");
+
+          var playButton = d3.select("#play-button");
+          var moving = false;
+
+          var currentColor = getDataByColor(
+            gridData[0][0].color.l,
+            gridData[0][0].color.a,
+            gridData[0][0].color.b,
+            mycolor,
+            chipTermDict,
+            termAbbrevTermDict
+          );
+
+          d3.select("#selectedSquare")
+            .style("stroke", "black")
+            .style("opacity", 1)
+            .style(
+              "background-color",
+              d3.lab(
+                parseFloat(currentColor["L*"]),
+                parseFloat(currentColor["a*"]),
+                parseFloat(currentColor["b*"]),
+                (opacity = 1)
+              )
+            );
+
+          var row = grid
+            .selectAll(".row")
+            .data(gridData)
+            .enter()
+            .append("g")
+            .attr("class", "row");
+
+          var column = row
+            .selectAll(".square")
+            .data(function (d) {
+              return d;
+            })
+            .enter()
+            .append("rect")
+            .attr("class", "square")
+            .attr("x", function (d) {
+              return d.x;
+            })
+            .attr("y", function (d) {
+              return d.y;
+            })
+            .attr("width", function (d) {
+              return d.width;
+            })
+            .attr("height", function (d) {
+              return d.height;
+            })
+            .attr("padding", function (d) {
+              return "10px";
+            })
+            .style("fill", function (d) {
+              return d.color;
+            })
+            .style("stroke", "white")
+            .attr("rx", 4)
+            .attr("ry", 4)
+            .style("stroke-width", 2)
+            .on("mouseover", mouseOver)
+            .on("mousemove", mouseMove)
+            .on("mouseout", mouseLeave)
+            .on("click", function (d) {
+              d.click++;
+              if (d.click % 1 == 0) {
+                d3.select(this).style("stroke", "white").style("opacity", 1);
+                d3.select("#selectedSquare")
+                  .style("stroke", "black")
+                  .style("opacity", 1)
+                  .style("background-color", "white");
+              }
+              if (d.click % 2 == 0) {
+                d3.select(this).style("stroke", "black").style("opacity", 1);
+                d3.select("#selectedSquare")
+                  .style("stroke", "black")
+                  .style("opacity", 1)
+                  .style("background-color", d.color);
+              }
+              currentColor = getDataByColor(
+                d.color.l,
+                d.color.a,
+                d.color.b,
+                mycolor,
+                chipTermDict,
+                termAbbrevTermDict
+              );
+              var updatedWords = getListofTerms(currentColor.all_terms);
+              updateWordMap(updatedWords);
+            });
+
+          playButton.on("click", function () {
+            var button = d3.select(this);
+            if (button.text() == "Pause") {
+              moving = false;
+              clearInterval(timer);
+              button.text("Play");
+            } else {
+              moving = true;
+              timer = setInterval(step, 2500);
+              button.text("Pause");
+            }
+          });
+
+          function step() {
+            var newChipID = parseInt(currentColor.chip_id) + 1;
+
+            if (newChipID <= 330) {
+              var newL = mycolor.find((d) => d["chip_id"] == newChipID)["L*"];
+              var newA = mycolor.find((d) => d["chip_id"] == newChipID)["a*"];
+              var newB = mycolor.find((d) => d["chip_id"] == newChipID)["b*"];
+
+              currentColor = getDataByColor(
+                newL,
+                newA,
+                newB,
+                mycolor,
+                chipTermDict,
+                termAbbrevTermDict
+              );
+
+              updateWordMap(getListofTerms(currentColor.all_terms));
+              d3.select("#selectedSquare")
+                .style("stroke", "black")
+                .style("opacity", 1)
+                .style(
+                  "background-color",
+                  d3.lab(
+                    parseFloat(currentColor["L*"]),
+                    parseFloat(currentColor["a*"]),
+                    parseFloat(currentColor["b*"]),
+                    (opacity = 1)
+                  )
+                );
+            } else {
+              moving = false;
+              currentValue = 0;
+              clearInterval(timer);
+              playButton.text("Play");
+            }
+          }
+
+          //**********************************WORD CLOUD*******************************
+
+          var width = 600;
+          var height = 600;
+
+          var word_cloud = d3
+            .select("#words")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+          var colorWords = getListofTerms(currentColor.all_terms);
+
+          var layout = d3.layout
+            .cloud()
+            .size([width, height])
+            .words(
+              colorWords.map(function (d) {
+                return {
+                  text: d.term,
+                  size: d.count,
+                };
+              })
+            )
+            .padding(5)
+            .fontSize(function (d) {
+              // binning font size by count; discuss in write up
+              if (d.size <= 10) {
+                return 10;
+              } else if (d.size > 10 && d.size <= 20) {
+                return 20;
+              } else {
+                return 40;
+              }
+            })
+            .on("end", draw);
+          layout.start();
+
+          function draw(words) {
+            word_cloud
+              .append("g")
+              .attr(
+                "transform",
+                "translate(" +
+                  layout.size()[0] / 2 +
+                  "," +
+                  layout.size()[1] / 2 +
+                  ")"
+              )
+              .selectAll("text")
+              .data(words)
+              .enter()
+              .append("text")
+              .style("font-size", function (d) {
+                return d.size + "px";
+              })
+              .attr("text-anchor", "middle")
+              .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .text(function (d) {
+                return d.text;
+              });
+          }
+
+          function updateWordMap(newWords) {
+            colorWords = newWords;
+            layout
+              .size([width, height])
+              .words(
+                newWords.map(function (d) {
+                  return {
+                    text: d.term,
+                    size: d.count,
+                  };
+                })
+              )
+              .padding(5)
+              .fontSize(function (d) {
+                if (d.size <= 10) {
+                  return 10;
+                } else if (d.size > 10 && d.size <= 20) {
+                  return 20;
+                } else {
+                  return 40;
+                }
+              })
+              .on("end", updateCloud);
+            layout.start();
+          }
+
+          function updateCloud(colorWords) {
+            word_cloud.selectAll("text").remove();
+            word_cloud
+              .append("g")
+              .attr(
+                "transform",
+                "translate(" +
+                  layout.size()[0] / 2 +
+                  "," +
+                  layout.size()[1] / 2 +
+                  ")"
+              )
+              .selectAll("text")
+              .data(colorWords)
+              .enter()
+              .append("text")
+              .transition()
+              .duration(10)
+              .style("font-size", function (d) {
+                return d.size + "px";
+              })
+              .attr("text-anchor", "middle")
+              .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .text(function (d) {
+                return d.text;
+              });
+          }
+          d3.select("#wordSlider1").on("click", function (d) {
+            var selectedCount = d3.select(this).property("value");
+
+            var filteredData = getListofTerms(currentColor.all_terms);
+
+            var filteredWords = filteredData.filter(function (d) {
+              if (d.count > selectedCount - 10 && d.count <= selectedCount) {
+                return d;
+              }
+            });
+
+            updateWordMap(filteredWords);
+          });
+
+          d3.select("#wordSlider2").on("click", function (d) {
+            var selectedCount = d3.select(this).property("value");
+
+            var filteredData = getListofTerms(currentColor.all_terms);
+
+            var filteredWords = filteredData.filter(function (d) {
+              if (d.count > selectedCount - 10 && d.count <= selectedCount) {
+                return d;
+              }
+            });
+
+            updateWordMap(filteredWords);
+          });
+
+          d3.select("#wordSlider3").on("click", function (d) {
+            var selectedCount = d3.select(this).property("value");
+
+            var filteredData = getListofTerms(currentColor.all_terms);
+
+            var filteredWords = filteredData.filter(function (d) {
+              if (d.count > selectedCount - 10 && d.count <= selectedCount) {
+                return d;
+              }
+            });
+
+            updateWordMap(filteredWords);
+          });
+
+          d3.select("#wordSlider4").on("click", function (d) {
+            var filteredData = getListofTerms(currentColor.all_terms);
+
+            updateWordMap(filteredData);
+          });
+        }
+      );
+
+    //**********************************END WORD CLOUD*******************************
+
+    /************** WORLD MAP START *******************/
+    // The svg
+    var map = d3
+        .select("#map")
+        .append("svg")
+        .attr("width", 600)
+        .attr("height", 400),
+      width = +map.attr("width"),
+      height = +map.attr("height");
+
+    var circleGraph = d3
+    .select("#treemapClickedInfobox")
+    .attr("width", 200)
+    .attr('height', 200)
+    .append('g')
+    .attr('transform', "translate(" + width / 2 + "," + height / 2 + ")")
+
+    // Map and projection
+    var path = d3.geoPath();
+    var projection = d3
+      .geoMercator()
+      .scale(75)
+      .center([0, 20])
+      .translate([width / 2, height / 2]);
+
+    var tooltip = d3.select("div.tooltip");
+
+    // Data and color scale
+    var data = d3.map();
+    var colorScale = d3
+      .scaleThreshold()
+      .domain([10, 25, 50, 75, 100, 125, 150, 175, 200])
+      .range(d3.schemeBlues[4]);
+
+    // Load external data and boot
+    d3.queue()
+      .defer(
+        d3.json,
+        "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
+      )
+      .defer(d3.csv, "data/male_female_ratio.csv", function (d) {
+        data.set(d.code, [+d.pop, +d.female, +d.male]);
+      })
+      .await(ready);
+
+    function ready(error, topo) {
+      let mouseOver = function (d) {
+        d3.selectAll(".Country")
+          .transition()
+          .duration(200)
+          .style("opacity", 0.5);
+        d3.select(this).transition().duration(200).style("opacity", 1);
+        // .style("stroke", "black");
+        if (d.total == 0) {
+          // Countries without data have 0 as their total
+          return tooltip.style("hidden", false).html(d.properties.name);
+        } else {
+          return tooltip
+            .style("hidden", false)
+            .html(
+              d.properties.name +
+                "<br>Interviewees: " +
+                d.total[0] +
+                "<br>Females: " +
+                d.total[1] +
+                "<br>Males: " +
+                d.total[2]
+            );
+        }
+      };
+
+      let mouseMove = function (d) {
+        if (d.total == 0) {
+          // Countries without data have 0 as their total
+          tooltip
+            .classed("hidden", false)
+            .style("top", d3.event.pageY + "px")
+            .style("left", d3.event.pageX + 10 + "px")
+            .html(d.properties.name);
+        } else {
+          tooltip
+            .classed("hidden", false)
+            .style("top", d3.event.pageY + "px")
+            .style("left", d3.event.pageX + 10 + "px")
+            .html(
+              d.properties.name +
+                "<br>Interviewees: " +
+                d.total[0] +
+                "<br>Females: " +
+                d.total[1] +
+                "<br>Males: " +
+                d.total[2]
+            );
+        }
+      };
+
+      let mouseLeave = function (d) {
+        d3.selectAll(".Country")
+          .transition()
+          .duration(200)
+          .style("opacity", 0.8);
+        d3.select(this).transition().duration(200); //.style("stroke", "white");
+
+        tooltip.classed("hidden", true);
+        // tooltip.style("opacity", 0);
+      };
+
+      // Draw the map
+      map
+        .append("g")
+        .selectAll("path")
+        .data(topo.features)
+        .enter()
+        .append("path")
+        // draw each country
+        .attr("d", d3.geoPath().projection(projection))
+        // set the color of each country
+        .attr("fill", function (d) {
+          d.total = data.get(d.id) || 0;
+          if (d.total == 0) {
+            // Countries without data have 0 as their total
+            return colorScale(d.total);
+          } else {
+            return colorScale(d.total);
+          }
+        })
+        .style("stroke", "transparent")
+        .attr("class", function (d) {
+          return "Country";
+        })
+        .attr("id", (d) => d.id)
+        .style("opacity", 0.8)
+        .on("mouseover", mouseOver)
+        .on("mousemove", mouseMove)
+        .on("mouseleave", mouseLeave);
+
+      /************** WORLD MAP END *******************/
+
+      /********************** TREE MAP *********************/
+      var treemap = document.getElementById("treemap");
+      var divWidth = treemap.offsetWidth;
+      var margin = { top: 40, right: 0, bottom: 20, left: 0 },
+        width = divWidth,
+        height = 800 - margin.top - margin.bottom,
+        formatNumber = d3.format(","),
+        transitioning;
+      // sets x and y scale to determine size of visible boxes
+      var x = d3.scaleLinear().domain([0, width]).range([0, width]);
+      var y = d3.scaleLinear().domain([0, height]).range([0, height]);
+      var treemap = d3
+        .treemap()
+        .size([width, height])
+        .paddingInner(0)
+        .round(false);
+      var svg = d3
+        .select("#treemap")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.bottom + margin.top)
+        .style("margin-left", -margin.left + "px")
+        .style("margin.right", -margin.right + "px")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .style("shape-rendering", "crispEdges");
+      var grandparent = svg.append("g").attr("class", "grandparent");
+      grandparent
+        .append("rect")
+        .attr("y", -margin.top)
+        .attr("width", width)
+        .attr("height", margin.top);
+      grandparent
+        .append("text")
+        .attr("x", 10)
+        .attr("y", 10 - margin.top)
+        .attr("dy", "1em");
+
+      let treemapClicked = function (countryName) {
+        let countries = Array.from(d3.selectAll(".Country")["_groups"][0]);
+        let country = countries.find(
+          (c) => c.__data__.properties.name == countryName
+        );
+
+        let countryData = country.__data__;
+        console.log("country clicked on: ", countryData);
+        let countryID = countryData.id;
+
+        // update opacity of country selected to 1 and other countries to 0.5
+        d3.selectAll(".Country").style("opacity", 0.25);
+        d3.select("#" + countryID).style("opacity", 1);
+        // .style("stroke", "black");
+
+        //********************************CIRCLE GRAPH***********************************
+
+        document.getElementById("treemapClickedInfobox").innerHTML =
+          countryData.total == 0
+            ? `<strong>${countryData.properties.name}</strong>'s interviewee demographic<br>No interviewee information available`
+            : `<strong>${countryData.properties.name}</strong>'s interviewee demographic<br>Interviewees: ${countryData.total[0]}
+        <br>Females: ${countryData.total[1]}
+        <br>Males: ${countryData.total[2]}`;
+      };
+
+
+
+      //********************************END CIRCLE GRAPH***********************************
+
+      // load the data used for the treemap
+      d3.json("data/treemap_terms.json", (data) => {
+        var root = d3.hierarchy(data);
+        treemap(
+          root
+            .sum((d) => d.value)
+            .sort((a, b) => b.height - a.height || b.value - a.value)
+        );
+        display(root);
+
+        function display(d) {
+          // write text into grandparent
+          // and activate click's handler
+          grandparent
+            .datum(d.parent)
+            .on("click", transition)
+            .select("text")
+            .text(name(d));
+
+          // grandparent color
+          grandparent
+            .datum(d.parent)
+            .select("rect")
+            .attr("fill", function () {
+              return "#FAF3F3";
+            });
+          var g1 = svg
+            .insert("g", ".grandparent")
+            .datum(d)
+            .attr("class", "depth");
+          var g = g1.selectAll("g").data(d.children).enter().append("g");
+          // add class and click handler to all g's with children
+          g.filter(function (d) {
+            return d.children;
+          })
+            .classed("children", true)
+            .on("click", transition);
+          g.selectAll(".child")
+            .data(function (d) {
+              return d.children || [d];
+            })
+            .enter()
+            .append("rect")
+            .attr("class", "child")
+            .call(rect);
+          // add title to parents
+          g.append("rect")
+            .attr("class", "parent")
+            .call(rect)
+            .append("title")
+            .text(function (d) {
+              return d.data.name;
+            });
+          /* Adding a foreign object instead of a text object, allows for text wrapping */
+          g.append("foreignObject")
+            .call(rect)
+            .attr("class", "foreignobj")
+            .append("xhtml:div")
+            .attr("dy", "1em")
+            .html(function (d) {
+              return (
+                "" +
+                '<p class="title"> ' +
+                (d.data.type != "Language" ? "" : "Language: ") +
+                d.data.name +
+                "</p>" +
+                (d.data.type == "Country" || d.data.type == "Continent"
+                  ? "<p><strong style='font-size:16px'>" +
+                    formatNumber(d.data.language_count) +
+                    "</strong> languages represented</p>"
+                  : "") +
+                (d.data.type != "Term"
+                  ? "<p><strong style='font-size:16px'>" +
+                    formatNumber(d.value) +
+                    "</strong> distinct terms used</p>"
+                  : "")
+              );
+            })
+            .attr("class", "textdiv"); //textdiv class allows us to style the text easily with CSS
+
+          function transition(d) {
+            // if the user clicks on a country, highlight the country on the world map
+            if (d.data.type == "Country") {
+              treemapClicked(d.data.name);
+            } else {
+              if (d.data.type == "Continent") {
+                document.getElementById("treemapClickedInfobox").innerHTML = "";
+                d3.selectAll(".Country").style("opacity", 1);
+              }
+            }
+            if (transitioning || !d) return;
+            transitioning = true;
+            var g2 = display(d),
+              t1 = g1.transition().duration(650),
+              t2 = g2.transition().duration(650);
+            // Update the domain only after entering new elements.
+            x.domain([d.x0, d.x1]);
+            y.domain([d.y0, d.y1]);
+            // Enable anti-aliasing during the transition.
+            svg.style("shape-rendering", null);
+            // Draw child nodes on top of parent nodes.
+            svg.selectAll(".depth").sort(function (a, b) {
+              return a.depth - b.depth;
+            });
+            // Fade-in entering text.
+            g2.selectAll("text").style("fill-opacity", 0);
+            g2.selectAll("foreignObject div").style("display", "none");
+            /*added*/
+            // Transition to the new view.
+            t1.selectAll("text").call(text).style("fill-opacity", 0);
+            t2.selectAll("text").call(text).style("fill-opacity", 1);
+            t1.selectAll("rect").call(rect);
+            t2.selectAll("rect").call(rect);
+            /* Foreign object */
+            t1.selectAll(".textdiv").style("display", "none");
+            /* added */
+            t1.selectAll(".foreignobj").call(foreign);
+            /* added */
+            t2.selectAll(".textdiv").style("display", "block");
+            /* added */
+            t2.selectAll(".foreignobj").call(foreign);
+            /* added */
+            // Remove the old node when the transition is finished.
+            t1.on("end.remove", function () {
+              this.remove();
+              transitioning = false;
+            });
+          }
+          return g;
+        }
+        function text(text) {
+          text
+            .attr("x", function (d) {
+              return x(d.x) + 6;
+            })
+            .attr("y", function (d) {
+              return y(d.y) + 6;
+            });
+        }
+        function rect(rect) {
+          rect
+            .attr("x", function (d) {
+              return x(d.x0);
+            })
+            .attr("y", function (d) {
+              return y(d.y0);
+            })
+            .attr("width", function (d) {
+              return x(d.x1) - x(d.x0);
+            })
+            .attr("height", function (d) {
+              return y(d.y1) - y(d.y0);
+            })
+            .attr("fill", function (d) {
+              return "#FAF3F3";
+            });
+        }
+        function foreign(foreign) {
+          /* added */
+          foreign
+            .attr("x", function (d) {
+              return x(d.x0);
+            })
+            .attr("y", function (d) {
+              return y(d.y0);
+            })
+            .attr("width", function (d) {
+              return x(d.x1) - x(d.x0);
+            })
+            .attr("height", function (d) {
+              return y(d.y1) - y(d.y0);
+            });
+        }
+        function name(d) {
+          // ;
+          return (
+            breadcrumbs(d) +
+            (d.parent
+              ? " -  Click to zoom out"
+              : " - Click inside square to zoom in")
+          );
+        }
+        function breadcrumbs(d) {
+          var res = "";
+          var sep = " > ";
+          d.ancestors()
+            .reverse()
+            .forEach(function (i) {
+              res +=
+                (i.data.type == "Language" ? "Language: " : "") +
+                i.data.name +
+                sep;
+            });
+          return res
+            .split(sep)
+            .filter(function (i) {
+              return i !== "";
+            })
+            .join(sep);
+        }
+        /*********** TREE MAP END *******************/
+      });
+    }
+  </script>
+</html>
