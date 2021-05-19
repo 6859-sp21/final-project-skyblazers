@@ -8,17 +8,10 @@
 
 We created a fun and interactive way for you to explore how colors are represented around the world! Click [HERE](https://6859-sp21.github.io/final-project-skyblazers/) to see our visuals! 
 
-<<<<<<< HEAD
 Here is a list of links to our:
 1. [Video Teaser](https://drive.google.com/file/d/13DZAPFANdUmeY6h7PiHlcA2FpUloDjQJ/view?usp=sharing)
-2. Paper: TBD
+2. [Paper](https://github.com/6859-sp21/final-project-skyblazers/tree/main/final)
 3. [Project Page](https://6859-sp21.github.io/final-project-skyblazers/)
-=======
-Here are links to our:
-1. Video Teaser: https://drive.google.com/file/d/13DZAPFANdUmeY6h7PiHlcA2FpUloDjQJ/view?usp=sharing
-2. Paper: https://github.com/6859-sp21/final-project-skyblazers/tree/main/final 
-3. Project Page: https://6859-sp21.github.io/final-project-skyblazers/
->>>>>>> 0b778c891a21eec775460ee67cddf249938a57f0
 
 ## Installation
 
